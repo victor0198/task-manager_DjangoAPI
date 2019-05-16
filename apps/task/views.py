@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny
 
 from apps.task.models import Task, Comment, Notification
 from apps.task.serializers import TaskSerializer, TaskSelfSerializer
+from apps.notification.views import AddNotificationTask
 
 """
     TASK SWAGGER view qwe
@@ -97,5 +98,7 @@ class AddTaskSelfView(GenericAPIView):
             user_assigned=validated_data['user_created'],
         )
         task.save()
+
+        AddNotificationTask(task.user_assigned.id, task)
 
         return Response(TaskSelfSerializer(task).data)

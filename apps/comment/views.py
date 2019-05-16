@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from apps.task.models import Comment
 from rest_framework.response import Response
 from apps.comment.serializers import CommentSerializer
+from apps.notification.views import AddNotificationComment
 
 
 class AddCommentView(GenericAPIView):
@@ -23,5 +24,7 @@ class AddCommentView(GenericAPIView):
             text=validated_data['text'],
         )
         comment.save()
+
+        AddNotificationComment(comment.user.id, comment)
 
         return Response(CommentSerializer(comment).data)
