@@ -123,7 +123,7 @@ class AddTaskSelfView(GenericAPIView):
         )
         task.save()
 
-        AddNotificationTask(task.user_assigned.id, task)
+        AddNotificationTask(task.user_assigned, task)
 
         return Response(TaskSelfSerializer(task).data)
 
@@ -145,7 +145,7 @@ class FinishTask(GenericAPIView):
             task.status = 2
             task.save()
 
-
+            AddNotificationTaskClosed(task.user_assigned, task)
 
             return Response(TaskSerializer(task).data)
 
