@@ -14,3 +14,4 @@ class TaskSelfSerializer(serializers.ModelSerializer):
         model = Task
         fields = ("title", "description", "status", "user_created")
 
+
