@@ -8,7 +8,7 @@ from apps.task.models import Task, Comment, Notification
 from apps.task.serializers import TaskSerializer, TaskSelfSerializer
 
 """
-    TASK SWAGGER view
+    TASK SWAGGER view qwe
 """
 
 
