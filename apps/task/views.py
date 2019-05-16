@@ -17,8 +17,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
 
 
-# View list of tasks
-
+# Task 3: View list of tasks
 class TaskListView(GenericAPIView):
     serializer_class = TaskSerializer
 
@@ -27,12 +26,10 @@ class TaskListView(GenericAPIView):
 
     def get(self, request):
         task = Task.objects.all()
-
         return Response(TaskSerializer(task, many=True).data)
 
 
-# View Completed tasks
-
+# Task 6: View Completed tasks
 class CompletedTaskListView(GenericAPIView):
     serializer_class = TaskSerializer
 
@@ -40,13 +37,11 @@ class CompletedTaskListView(GenericAPIView):
     authentication_classes = ()
 
     def get(self, request):
-        task = Task.objects.filter(pk=Task.FINISHED)
-
+        task = Task.objects.filter(status=Task.FINISHED)
         return Response(TaskSerializer(task, many=True).data)
 
 
-# Remove task
-
+# Task 9:  Remove task
 class DeleteView(GenericAPIView):
     serializer_class = TaskSerializer
 
