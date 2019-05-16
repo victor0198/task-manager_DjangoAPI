@@ -145,7 +145,7 @@ class FinishTask(GenericAPIView):
             task.status = 2
             task.save()
 
-            # AddNotificationTaskClosed(task.user_assigned.id, task)
+
 
             return Response(TaskSerializer(task).data)
 

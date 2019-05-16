@@ -10,6 +10,7 @@ from apps.notification.serializers import NotificationSerializer
 from django.contrib.auth.models import User
 
 
+
 def AddNotificationComment(iduser, comment):
     userinstance = User.objects.filter(id=iduser).first()
 
@@ -38,6 +39,7 @@ def AddNotificationTaskClosed(iduser, task):
     )
     notification.task.add(task)
     notification.save()
+
 
 
 # task 4: Create a task
@@ -70,3 +72,18 @@ class MyNotificationView(GenericAPIView):
     def get(self, request, pk):
         notific = Notification.objects.filter(user=pk)
         return Response(NotificationSerializer(notific, many=True).data)
+
+
+
+# task 16: View count of new notifications
+
+class CountNewNotifications(GenericAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request):
+        not_true = Notification.objects.filter(seen=True)
+        count = len(not_true)
+        return Response ({"count=":count})
+
