@@ -7,7 +7,6 @@ from rest_framework.response import Response
 from apps.notification.serializers import NotificationSerializer
 
 
-
 # task 4: Create a task
 class AddNotificationView(GenericAPIView):
     serializer_class = NotificationSerializer
@@ -39,3 +38,15 @@ class MyNotificationView(GenericAPIView):
         notific = Notification.objects.filter(user=pk)
         return Response(NotificationSerializer(notific, many=True).data)
 
+
+# task 16: View count of new notifications
+
+class CountNewNotifications(GenericAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request):
+        not_true = Notification.objects.filter(seen=True)
+        count = len(not_true)
+        return Response ({"count=":count})
