@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from apps.notification.serializers import NotificationSerializer
 
 
+
 # task 4: Create a task
 class AddNotificationView(GenericAPIView):
     serializer_class = NotificationSerializer
