@@ -5,7 +5,7 @@ from apps.task.views import  AddTaskSelfView
 
 router = DefaultRouter()
 
-from apps.task.views import TaskListView, CompletedTaskListView, DeleteView
+from apps.task.views import AddTaskView, TaskListView, CompletedTaskListView, DeleteView
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -14,7 +14,7 @@ router = DefaultRouter()
 urlpatterns = router.urls
 
 urlpatterns += [
-    # path('create/', AddTaskView.as_view(), name='task_create'),
+    path('create/', AddTaskView.as_view(), name='task_create'),
     path('create_self/', AddTaskSelfView.as_view(), name='task_create_self'),
     path('task/', TaskListView.as_view(), name='task_list'),
     path('completed_task/', CompletedTaskListView.as_view(), name='completed_list'),

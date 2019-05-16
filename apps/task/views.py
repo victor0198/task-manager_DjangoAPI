@@ -8,7 +8,6 @@ from rest_framework.permissions import AllowAny
 from apps.task.models import Task
 from rest_framework.response import Response
 
-
 """
     TASK SWAGGER view
 """
@@ -19,9 +18,17 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
 
 
-# View list of tasks
-
+# task3  View list of tasks
 class TaskListView(GenericAPIView):
+    serializer_class = TaskSelfSerializer
+
+    def get(self, request):
+        task = Task.objects.all()
+
+        return Response(TaskSerializer(task, many=True).data)
+
+
+class AddTaskView(GenericAPIView):
     serializer_class = TaskSerializer
 
     permission_classes = (AllowAny,)
@@ -46,15 +53,12 @@ class TaskListView(GenericAPIView):
 # task 7: Assign a task to me
 class AddTaskSelfView(GenericAPIView):
     serializer_class = TaskSelfSerializer
+
     def get(self, request):
         task = Task.objects.all()
 
         return Response(TaskSerializer(task, many=True).data)
 
-
-# task3: View Completed tasks
-
-class CompletedTaskListView(GenericAPIView):
     serializer_class = TaskSerializer
 
     permission_classes = (AllowAny,)
@@ -74,6 +78,16 @@ class CompletedTaskListView(GenericAPIView):
         task.save()
 
         return Response(TaskSelfSerializer(task).data)
+
+
+# task3: View Completed tasks
+
+class CompletedTaskListView(GenericAPIView):
+    serializer_class = TaskSerializer
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
     def get(self, request):
         task = Task.objects.filter(pk=Task.FINISHED)
 
