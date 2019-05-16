@@ -30,6 +30,16 @@ def AddNotificationTask(iduser, task):
     notification.save()
 
 
+def AddNotificationTaskClosed(iduser, task):
+    userinstance = User.objects.filter(id=iduser).first()
+
+    notification = Notification.objects.create(
+        user=userinstance
+    )
+    notification.task.add(task)
+    notification.save()
+
+
 # task 4: Create a task
 class AddNotificationView(GenericAPIView):
     serializer_class = NotificationSerializer

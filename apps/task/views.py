@@ -9,7 +9,7 @@ from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
 from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskUpdateStatus
 
-from apps.notification.views import AddNotificationTask, AddNotificationComment
+from apps.notification.views import AddNotificationTask, AddNotificationTaskClosed
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -144,5 +144,8 @@ class FinishTask(GenericAPIView):
             task = Task.objects.filter(id=data["id"]).first()
             task.status = 2
             task.save()
+
+            # AddNotificationTaskClosed(task.user_assigned.id, task)
+
             return Response(TaskSerializer(task).data)
 
