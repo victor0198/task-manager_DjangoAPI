@@ -9,7 +9,7 @@ from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
 from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskUpdateStatus
 
-
+from apps.notification.views import AddNotificationTask, AddNotificationComment
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -122,6 +122,8 @@ class AddTaskSelfView(GenericAPIView):
             user_assigned=validated_data['user_created'],
         )
         task.save()
+
+        AddNotificationTask(task.user_assigned.id, task)
 
         return Response(TaskSelfSerializer(task).data)
 
