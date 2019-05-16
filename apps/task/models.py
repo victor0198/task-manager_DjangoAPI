@@ -21,3 +21,4 @@ class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.ManyToManyField(Task)
     comment = models.ManyToManyField(Comment)
+ 
