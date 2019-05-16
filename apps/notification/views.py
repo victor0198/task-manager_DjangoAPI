@@ -9,20 +9,3 @@ from rest_framework.response import Response
 from apps.notification.serializers import NotificationSerializer
 
 
-# task 4: Create a task
-class AddNotificationView(GenericAPIView):
-    serializer_class = NotificationSerializer
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    @serialize_decorator(NotificationSerializer)
-    def post(self, request):
-        validated_data = request.serializer.validated_data
-
-        task = Task.objects.create(
-            title=validated_data['title'],
-        )
-        task.save()
-
-        return Response(NotificationSerializer(task).data)
