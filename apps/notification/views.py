@@ -12,7 +12,8 @@ from django.contrib.auth.models import User
 
 def AddNotificationComment(user, comment):
     notification = Notification.objects.create(
-        user=user
+        user=user,
+        seen=False
     )
     notification.comment.add(comment)
     notification.save()
@@ -20,7 +21,8 @@ def AddNotificationComment(user, comment):
 
 def AddNotificationTask(user, task):
     notification = Notification.objects.create(
-        user=user
+        user=user,
+        seen=False
     )
     notification.task.add(task)
     notification.save()
@@ -28,7 +30,8 @@ def AddNotificationTask(user, task):
 
 def AddNotificationTaskClosed(user, task):
     notification = Notification.objects.create(
-        user=user
+        user=user,
+        seen=False
     )
     notification.task.add(task)
     notification.save()

@@ -49,6 +49,8 @@ class AddTaskView(GenericAPIView):
         )
         task.save()
 
+        AddNotificationTask(task.user_assigned, task)
+
         return Response(TaskSerializer(task).data)
 
 
@@ -122,8 +124,6 @@ class AddTaskSelfView(GenericAPIView):
             user_assigned=validated_data['user_created'],
         )
         task.save()
-
-        AddNotificationTask(task.user_assigned, task)
 
         return Response(TaskSelfSerializer(task).data)
 
