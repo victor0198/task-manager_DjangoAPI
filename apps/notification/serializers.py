@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.task.models import Notification, Task
+from apps.notification.models import Notification
 from apps.task.serializers import TaskSerializer
 
 

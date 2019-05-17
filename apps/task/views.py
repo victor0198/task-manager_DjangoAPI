@@ -1,4 +1,3 @@
-
 from drf_util.decorators import serialize_decorator
 from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView, get_object_or_404
@@ -7,9 +6,9 @@ from rest_framework.permissions import AllowAny
 from apps.task.serializers import TaskSelfSerializer
 
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskUpdateStatus
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer
 
-from apps.notification.views import AddNotificationTask, AddNotificationTaskClosed
+from apps.notification.views import AddNotificationTask
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -101,8 +100,7 @@ class UserTaskView(GenericAPIView):
 
     def get(self, request, pk):
         task = Task.objects.filter(user_assigned=pk)
-        return Response(TaskSerializer(task,many=True ).data)
-
+        return Response(TaskSerializer(task, many=True).data)
 
 
 # task 7: Assign a task to me
@@ -128,24 +126,13 @@ class AddTaskSelfView(GenericAPIView):
         return Response(TaskSelfSerializer(task).data)
 
 
-
-
 # task 8
 class FinishTask(GenericAPIView):
-    serializer_class = TaskUpdateStatus
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    @serialize_decorator(TaskUpdateStatus)
-    def put(self, request):
-        serializer = TaskUpdateStatus(data=request.data)
-        if serializer.is_valid():
-            data = serializer.validated_data
-            task = Task.objects.filter(id=data["id"]).first()
-            task.status = 2
-            task.save()
-
-            AddNotificationTaskClosed(task.user_assigned, task)
-
-            return Response(TaskSerializer(task).data)
-
+    def put(self, request, pk):
+        task = Task.objects.get(pk=pk)
+        task.status = "finished"
+        task.save()
+        return Response(TaskSerializer(task).data)

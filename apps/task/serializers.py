@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from apps.task.models import Comment, Task
+
+from apps.comment.models import Comment
+from apps.task.models import Task
 from rest_framework.exceptions import ValidationError
 
 
@@ -34,16 +36,5 @@ class DetailTaskSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'comments']
 
 
-class TaskUpdateStatus(serializers.ModelSerializer):
-    id = serializers.IntegerField()
 
-    def validate_id(self, value):
-        post = Task.objects.filter(id=value).first()
-        if not post:
-            raise ValidationError("Not exists")
-        return value
-
-    class Meta:
-        model = Task
-        fields = ['id']
 
