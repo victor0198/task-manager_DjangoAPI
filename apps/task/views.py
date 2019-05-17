@@ -1,4 +1,3 @@
-
 from drf_util.decorators import serialize_decorator
 from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView, get_object_or_404
@@ -101,8 +100,7 @@ class UserTaskView(GenericAPIView):
 
     def get(self, request, pk):
         task = Task.objects.filter(user_assigned=pk)
-        return Response(TaskSerializer(task,many=True ).data)
-
+        return Response(TaskSerializer(task, many=True).data)
 
 
 # task 7: Assign a task to me
@@ -128,8 +126,6 @@ class AddTaskSelfView(GenericAPIView):
         return Response(TaskSelfSerializer(task).data)
 
 
-
-
 # task 8
 class FinishTask(GenericAPIView):
     serializer_class = TaskUpdateStatus
@@ -148,4 +144,3 @@ class FinishTask(GenericAPIView):
             AddNotificationTaskClosed(task.user_assigned, task)
 
             return Response(TaskSerializer(task).data)
-
