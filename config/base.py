@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'apps.task',
     'apps.notification',
     'apps.comment',
+
+
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

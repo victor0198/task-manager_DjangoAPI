@@ -7,7 +7,6 @@ class Task(models.Model):
     user_assigned = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_assign")
     title = models.CharField(max_length=100)
     description = models.TextField()
-
     CREATED = 'created'
     INPROCES = 'inprocess'
     FINISHED = 'finished'

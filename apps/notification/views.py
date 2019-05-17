@@ -1,15 +1,12 @@
-from django.shortcuts import render
 from drf_util.decorators import serialize_decorator
 
-from apps.task.serializers import TaskSerializer, TaskSelfSerializer
-from rest_framework.generics import GenericAPIView, get_object_or_404
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
-from apps.task.models import  Task
 from apps.notification.models import Notification
-from apps.comment.models import Comment
+from apps.task.models import Task
+
 from rest_framework.response import Response
 from apps.notification.serializers import NotificationSerializer
-from django.contrib.auth.models import User
 
 
 def AddNotificationComment(user, comment):
@@ -82,3 +79,4 @@ class CountNewNotifications(GenericAPIView):
         not_true = Notification.objects.filter(seen=False)
         count = len(not_true)
         return Response({"count=": count})
+
