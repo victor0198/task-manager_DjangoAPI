@@ -2,10 +2,10 @@ from django.shortcuts import render
 from drf_util.decorators import serialize_decorator
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.permissions import AllowAny
-from apps.task.models import Comment
 from rest_framework.response import Response
 from apps.comment.serializers import CommentSerializer
 from apps.notification.views import AddNotificationComment
+from apps.comment.models import Comment
 
 
 class AddCommentView(GenericAPIView):
@@ -25,6 +25,6 @@ class AddCommentView(GenericAPIView):
         )
         comment.save()
 
-        AddNotificationComment(comment.user.id, comment)
+        AddNotificationComment(comment.user, comment)
 
         return Response(CommentSerializer(comment).data)

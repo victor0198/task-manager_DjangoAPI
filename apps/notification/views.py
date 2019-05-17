@@ -4,27 +4,36 @@ from drf_util.decorators import serialize_decorator
 from apps.task.serializers import TaskSerializer, TaskSelfSerializer
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.permissions import AllowAny
-from apps.task.models import Notification, Task, Comment
+from apps.task.models import  Task
 from rest_framework.response import Response
 from apps.notification.serializers import NotificationSerializer
 from django.contrib.auth.models import User
+from apps.comment.models import Comment
+from apps.notification.models import Notification
 
 
-def AddNotificationComment(iduser, comment):
-    userinstance = User.objects.filter(id=iduser).first()
-
+def AddNotificationComment(user, comment):
     notification = Notification.objects.create(
-        user=userinstance
+        user=user,
+        seen=False
     )
     notification.comment.add(comment)
     notification.save()
 
 
-def AddNotificationTask(iduser, task):
-    userinstance = User.objects.filter(id=iduser).first()
-
+def AddNotificationTask(user, task):
     notification = Notification.objects.create(
-        user=userinstance
+        user=user,
+        seen=False
+    )
+    notification.task.add(task)
+    notification.save()
+
+
+def AddNotificationTaskClosed(user, task):
+    notification = Notification.objects.create(
+        user=user,
+        seen=False
     )
     notification.task.add(task)
     notification.save()
@@ -32,7 +41,7 @@ def AddNotificationTask(iduser, task):
 
 # task 15: View my notifications
 
-class MyNotificationSerializer(GenericAPIView):
+class MyNotificationView(GenericAPIView):
     serializer_class = NotificationSerializer
 
     permission_classes = (AllowAny,)
@@ -41,3 +50,16 @@ class MyNotificationSerializer(GenericAPIView):
     def get(self, request, pk):
         notific = Notification.objects.filter(user=pk)
         return Response(NotificationSerializer(notific, many=True).data)
+
+
+# task 16: View count of new notifications
+
+class CountNewNotifications(GenericAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request):
+        not_true = Notification.objects.filter(seen=False)
+        count = len(not_true)
+        return Response({"count=": count})
