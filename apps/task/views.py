@@ -1,9 +1,10 @@
-
 from drf_util.decorators import serialize_decorator
 from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.status import HTTP_204_NO_CONTENT
+
 from apps.task.serializers import TaskSelfSerializer
 
 from apps.task.models import Task
@@ -74,10 +75,10 @@ class DeleteView(GenericAPIView):
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    def get(self, request, pk):
+    def delete(self, request, pk):
         task = get_object_or_404(Task.objects.filter(pk=pk))
         task.delete()
-        return Response(TaskSerializer(task).data)
+        return Response(status=HTTP_204_NO_CONTENT)
 
 
 # task 11
@@ -101,8 +102,7 @@ class UserTaskView(GenericAPIView):
 
     def get(self, request, pk):
         task = Task.objects.filter(user_assigned=pk)
-        return Response(TaskSerializer(task,many=True ).data)
-
+        return Response(TaskSerializer(task, many=True).data)
 
 
 # task 7: Assign a task to me
@@ -128,8 +128,6 @@ class AddTaskSelfView(GenericAPIView):
         return Response(TaskSelfSerializer(task).data)
 
 
-
-
 # task 8
 class FinishTask(GenericAPIView):
     serializer_class = TaskUpdateStatus
@@ -148,4 +146,3 @@ class FinishTask(GenericAPIView):
             AddNotificationTaskClosed(task.user_assigned, task)
 
             return Response(TaskSerializer(task).data)
-

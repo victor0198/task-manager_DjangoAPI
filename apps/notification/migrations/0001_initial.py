@@ -11,8 +11,13 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('comment', '0001_initial'),
+<<<<<<< HEAD
         ('task', '0002_auto_20190517_1455'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+=======
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('task', '0001_initial'),
+>>>>>>> 844e81291be6c519f35e1ba2765554b5247a002c
     ]
 
     operations = [

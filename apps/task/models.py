@@ -16,4 +16,4 @@ class Task(models.Model):
         (INPROCES, 'inprocess'),
         (FINISHED, 'finished'),
     ]
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default=CREATED)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=CREATED)
