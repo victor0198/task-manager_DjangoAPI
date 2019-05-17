@@ -82,3 +82,4 @@ class CountNewNotifications(GenericAPIView):
         not_true = Notification.objects.filter(seen=False)
         count = len(not_true)
         return Response({"count=": count})
+

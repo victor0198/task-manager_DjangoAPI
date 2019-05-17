@@ -36,5 +36,7 @@ class DetailTaskSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'comments']
 
 
-
-
+class FilterTaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ('status', 'user_assigned', 'title')
