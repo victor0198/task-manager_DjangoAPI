@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.task.models import  Task
+from apps.task.models import Task
 from apps.comment.models import Comment
 from rest_framework.exceptions import ValidationError
 
