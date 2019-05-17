@@ -77,6 +77,6 @@ class CountNewNotifications(GenericAPIView):
     authentication_classes = ()
 
     def get(self, request):
-        not_true = Notification.objects.filter(seen=True)
+        not_true = Notification.objects.filter(seen=False)
         count = len(not_true)
         return Response({"count=": count})
