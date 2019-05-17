@@ -11,7 +11,7 @@ urlpatterns = router.urls
 
 urlpatterns += [
 
-    path('task/', TaskListView.as_view(), name='task_list'),
+    path('tasks_all/', TaskListView.as_view(), name='task_list'),
     path('completed_task/', CompletedTaskListView.as_view(), name='completed_list'),
     path('delete_task/<int:pk>/', DeleteView.as_view(), name='delete_task'),
     path('create/', AddTaskView.as_view(), name='task_create'),
