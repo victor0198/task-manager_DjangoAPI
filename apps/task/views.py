@@ -147,5 +147,3 @@ class FinishTask(GenericAPIView):
 
             return Response(TaskSerializer(task).data)
 
-
-# uodaqwrqr
