@@ -13,7 +13,7 @@ class TaskSerializer(serializers.ModelSerializer):
 class TaskSelfSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ("title", "description", "status", "user_created")
+        fields = ("title", "description", "status")
 
 
 # --------Comments

@@ -3,7 +3,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer, FilterTaskSerializer
 
@@ -34,8 +34,7 @@ class TaskListView(GenericAPIView):
 class AddTaskView(GenericAPIView):
     serializer_class = TaskSerializer
 
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+    permission_classes = (IsAuthenticated,)
 
     @serialize_decorator(TaskSerializer)
     def post(self, request):
@@ -45,7 +44,7 @@ class AddTaskView(GenericAPIView):
             title=validated_data['title'],
             description=validated_data['description'],
             status=validated_data['status'],
-            user_created=validated_data['user_created'],
+            user_created=request.user,
             user_assigned=validated_data['user_assigned'],
         )
         task.save()
@@ -72,8 +71,7 @@ class CompletedTaskListView(GenericAPIView):
 class DeleteView(GenericAPIView):
     serializer_class = TaskSerializer
 
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+    permission_classes = (IsAuthenticated,)
 
     def delete(self, request, pk):
         task = get_object_or_404(Task.objects.filter(pk=pk))
@@ -109,8 +107,7 @@ class UserTaskView(GenericAPIView):
 class AddTaskSelfView(GenericAPIView):
     serializer_class = TaskSelfSerializer
 
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+    permission_classes = (IsAuthenticated,)
 
     @serialize_decorator(TaskSelfSerializer)
     def post(self, request):
@@ -120,8 +117,8 @@ class AddTaskSelfView(GenericAPIView):
             title=validated_data['title'],
             description=validated_data['description'],
             status=validated_data['status'],
-            user_created=validated_data['user_created'],
-            user_assigned=validated_data['user_created'],
+            user_created=request.user,
+            user_assigned=request.user,
         )
         task.save()
 
