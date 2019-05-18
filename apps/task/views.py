@@ -11,7 +11,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
 
-
 from apps.task.models import Task
 from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate
 
@@ -145,7 +144,6 @@ class FinishTask(GenericAPIView):
 # task 11 filter
 
 class FilterTask(GenericAPIView):
-
     serializer_class = MyFilterSerializer
 
     permission_classes = (AllowAny,)
@@ -165,9 +163,4 @@ class FilterTask(GenericAPIView):
         if validated_data.get("user_assigned"):
             objects_all = objects_all.filter(user_assigned=validated_data["user_assigned"])
 
-<<<<<<< HEAD
-            return Response(TaskSerializer(task).data)
-
-=======
         return Response(TaskSerializer(objects_all, many=True).data)
->>>>>>> f89a30b257c88fdb89fbeed1d436e9fbb1128c88
