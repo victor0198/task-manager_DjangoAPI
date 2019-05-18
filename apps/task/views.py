@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from apps.task.serializers import TaskSelfSerializer, FilterTaskSerializer
+from apps.task.serializers import TaskSelfSerializer, MyFilterSerializer
 
 from apps.task.models import Task
 from apps.task.serializers import DetailTaskSerializer, TaskSerializer
@@ -142,15 +142,22 @@ class FinishTask(GenericAPIView):
 # task 11(skype)
 
 class FilterTask(GenericAPIView):
-    serializer_class = FilterTaskSerializer
-
+    serializer_class = MyFilterSerializer
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    @serialize_decorator(FilterTaskSerializer)
-    @swagger_auto_schema(query_serializer=FilterTaskSerializer)
+    @serialize_decorator(MyFilterSerializer)
+    @swagger_auto_schema(query_serializer=MyFilterSerializer)
     def get(self, request):
-        validated_data = request.serializer.validated_data
-        task = Task.objects.filter(status=validated_data["status"], title=validated_data["title"],
-                                   user_assigned=validated_data["user_assigned"])
-        return Response(TaskSerializer(task, many=True).data)
+        validated_data = request.serializer.validated_data  # 1
+        objects_all = Task.objects.filter()
+        if validated_data.get("status"):
+            objects_all = objects_all.filter(status=validated_data["status"])
+
+        if validated_data.get("title"):
+            objects_all = objects_all.filter(title=validated_data["title"])
+
+        if validated_data.get("user_assigned"):
+            objects_all = objects_all.filter(user_assigned=validated_data["user_assigned"])
+
+        return Response(TaskSerializer(objects_all, many=True).data)
