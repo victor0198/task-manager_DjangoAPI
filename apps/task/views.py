@@ -4,7 +4,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
-from apps.task.serializers import FilterTaskSerializer
+from apps.task.serializers import FilterTaskSerializer, TaskUpdateAllSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
@@ -190,3 +190,25 @@ class TasksAllView(GenericAPIView):
 
         print("-2--")
         return JsonResponse(tasks_all, safe=False)
+
+
+class UpdateTask(GenericAPIView):
+    serializer_class = TaskUpdateAllSerializer
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def put(self, request):
+        serializer = TaskUpdateAllSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            task = Task.objects.get(id=data['id'])
+            task.user_created = data["user_created"]
+            task.user_assigned = data["user_assigned"]
+            task.title = data["title"]
+            task.description = data["description"]
+            task.status = data["status"]
+            task.save()
+            response_data = TaskSerializer(task).data
+            return Response(response_data)
+        else:
+            return Response(serializer.errors, status=400)

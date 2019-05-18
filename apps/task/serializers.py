@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+
 from apps.comment.models import Comment
 from apps.task.models import Task
 from django.contrib.auth.models import User
@@ -71,3 +73,16 @@ class TaskCommentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['title', 'description', 'status', 'user_created', 'user_assigned', "comments"]
+
+class TaskUpdateAllSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
+    def validate_id(self, value):
+        task = Task.objects.filter(id=value).first()
+        if not task:
+            raise ValidationError("Not exists")
+        return value
+
+    class Meta:
+        model = Task
+        fields = ["id", "user_created", "user_assigned", "title", "description", "status"]
