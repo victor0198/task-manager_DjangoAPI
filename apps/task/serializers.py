@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from apps.comment.models import Comment
 from apps.task.models import Task
-from rest_framework.exceptions import ValidationError
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -11,10 +10,16 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class TaskSerializerCreate(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ('title', 'description', 'status', 'user_assigned')
+
+
 class TaskSelfSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ("title", "description", "status", "user_created")
+        fields = ("title", "description", "status")
 
 
 # --------Comments

@@ -3,11 +3,17 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
+
 from rest_framework.permissions import AllowAny
 from apps.task.serializers import TaskSelfSerializer, MyFilterSerializer
 
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.status import HTTP_204_NO_CONTENT
+from apps.task.serializers import TaskSelfSerializer
+
+
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate
 
 from apps.notification.views import AddNotificationTask
 
@@ -31,12 +37,11 @@ class TaskListView(GenericAPIView):
 
 # task 4: Create a task
 class AddTaskView(GenericAPIView):
-    serializer_class = TaskSerializer
+    serializer_class = TaskSerializerCreate
 
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+    permission_classes = (IsAuthenticated,)
 
-    @serialize_decorator(TaskSerializer)
+    @serialize_decorator(TaskSerializerCreate)
     def post(self, request):
         validated_data = request.serializer.validated_data
 
@@ -44,7 +49,7 @@ class AddTaskView(GenericAPIView):
             title=validated_data['title'],
             description=validated_data['description'],
             status=validated_data['status'],
-            user_created=validated_data['user_created'],
+            user_created=request.user,
             user_assigned=validated_data['user_assigned'],
         )
         task.save()
@@ -71,13 +76,12 @@ class CompletedTaskListView(GenericAPIView):
 class DeleteView(GenericAPIView):
     serializer_class = TaskSerializer
 
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+    permission_classes = (IsAuthenticated,)
 
-    def get(self, request, pk):
+    def delete(self, request, pk):
         task = get_object_or_404(Task.objects.filter(pk=pk))
         task.delete()
-        return Response(TaskSerializer(task).data)
+        return Response(status=HTTP_204_NO_CONTENT)
 
 
 # task 11
@@ -108,8 +112,7 @@ class UserTaskView(GenericAPIView):
 class AddTaskSelfView(GenericAPIView):
     serializer_class = TaskSelfSerializer
 
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+    permission_classes = (IsAuthenticated,)
 
     @serialize_decorator(TaskSelfSerializer)
     def post(self, request):
@@ -119,12 +122,12 @@ class AddTaskSelfView(GenericAPIView):
             title=validated_data['title'],
             description=validated_data['description'],
             status=validated_data['status'],
-            user_created=validated_data['user_created'],
-            user_assigned=validated_data['user_created'],
+            user_created=request.user,
+            user_assigned=request.user,
         )
         task.save()
 
-        return Response(TaskSelfSerializer(task).data)
+        return Response(TaskSerializer(task).data)
 
 
 # task 8
@@ -139,10 +142,12 @@ class FinishTask(GenericAPIView):
         return Response(TaskSerializer(task).data)
 
 
-# task 11(skype)
+# task 11 filter
 
 class FilterTask(GenericAPIView):
+
     serializer_class = MyFilterSerializer
+
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
