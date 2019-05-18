@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from apps.task.models import Task
+
 from apps.comment.models import Comment
-from rest_framework.exceptions import ValidationError
+from apps.task.models import Task
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -10,10 +10,16 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class TaskSerializerCreate(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ('title', 'description', 'status', 'user_assigned')
+
+
 class TaskSelfSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ("title", "description", "status", "user_created")
+        fields = ("title", "description", "status")
 
 
 # --------Comments
@@ -35,16 +41,13 @@ class DetailTaskSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'comments']
 
 
-class TaskUpdateStatus(serializers.ModelSerializer):
-    id = serializers.IntegerField()
+# class FilterTaskSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Task
+#         fields = ('status', 'user_assigned', 'title')
 
-    def validate_id(self, value):
-        post = Task.objects.filter(id=value).first()
-        if not post:
-            raise ValidationError("Not exists")
-        return value
 
-    class Meta:
-        model = Task
-        fields = ['id']
-
+class MyFilterSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=200, required=False)
+    status = serializers.CharField(max_length=10, required=False)
+    user_assigned = serializers.IntegerField(required=False)
