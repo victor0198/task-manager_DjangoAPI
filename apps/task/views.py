@@ -137,7 +137,7 @@ class FinishTask(GenericAPIView):
         return Response(TaskSerializer(task).data)
 
 
-# task 11(skype)
+# task 11 filter
 
 class FilterTask(GenericAPIView):
     serializer_class = FilterTaskSerializer
