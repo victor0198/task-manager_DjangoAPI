@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from drf_util.decorators import serialize_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
@@ -8,9 +9,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer,\
-                                    TaskCommentsSerializer
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer, \
+    TaskCommentsSerializer, TaskSerializerCreateResponse
 from apps.notification.views import AddNotificationTask
+from apps.users.serializers import UserTaskSerializer
+from django.contrib.auth.models import User
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -43,15 +46,17 @@ class AddTaskView(GenericAPIView):
         task = Task.objects.create(
             title=validated_data['title'],
             description=validated_data['description'],
-            status=validated_data['status'],
+            status=Task.CREATED,
             user_created=request.user,
-            user_assigned=validated_data['user_assigned'],
         )
+        if validated_data['user_assigned']:
+            task.user_assigned = validated_data['user_assigned']
+
         task.save()
 
-        AddNotificationTask(task.user_assigned, task)
+        # AddNotificationTask(task.user_assigned, task)
 
-        return Response(TaskSerializer(task).data)
+        return Response(status=201)
 
 
 # Task 6: View Completed tasks
@@ -142,15 +147,13 @@ class FinishTask(GenericAPIView):
 # task 11 filter
 
 class FilterTask(GenericAPIView):
-    serializer_class = FilterTaskSerializer
-
     serializer_class = MyFilterSerializer
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    @serialize_decorator(FilterTaskSerializer)
-    @swagger_auto_schema(query_serializer=FilterTaskSerializer)
+    @serialize_decorator(MyFilterSerializer)
+    @swagger_auto_schema(query_serializer=MyFilterSerializer)
     def get(self, request):
         validated_data = request.serializer.validated_data
         task = Task.objects.filter(status=validated_data["status"], title=validated_data["title"],
@@ -164,6 +167,26 @@ class TaskItemCommentsView(GenericAPIView):
     authentication_classes = ()
 
     def get(self, request, pk):
-        blog = get_object_or_404(Task.objects.filter(pk=pk))
-        response_data = TaskCommentsSerializer(blog).data
+        task = get_object_or_404(Task.objects.filter(pk=pk))
+        response_data = TaskCommentsSerializer(task).data
         return Response(response_data)
+
+
+class TasksAllView(GenericAPIView):
+    serializer_class = TaskSerializer, UserTaskSerializer
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request):
+        print("-1--")
+        tasks_all = []
+        tasks = Task.objects.all()
+
+        for task in tasks:
+            temp_task = TaskSerializer(task).data
+            temp_task.update({'created by': UserTaskSerializer(User.objects.filter(pk=task.user_assigned.id).first())})
+            tasks_all.append(temp_task)
+
+        print("-2--")
+        return JsonResponse(tasks_all, safe=False)

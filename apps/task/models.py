@@ -4,7 +4,7 @@ from django.db import models
 
 class Task(models.Model):
     user_created = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_creat")
-    user_assigned = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_assign")
+    user_assigned = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_assign", null=True, default=None)
     title = models.CharField(max_length=100)
     description = models.TextField()
     CREATED = 'created'

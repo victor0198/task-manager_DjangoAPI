@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from apps.comment.models import Comment
 from apps.task.models import Task
+from django.contrib.auth.models import User
+from apps.users.serializers import UserSerializer, UserTaskSerializer
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -12,7 +14,13 @@ class TaskSerializer(serializers.ModelSerializer):
 class TaskSerializerCreate(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ('title', 'description', 'status', 'user_assigned')
+        fields = ('title', 'description', 'user_assigned')
+
+
+class TaskSerializerCreateResponse(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ('title', 'description')
 
 
 class TaskSelfSerializer(serializers.ModelSerializer):
