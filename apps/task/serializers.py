@@ -1,7 +1,7 @@
 from rest_framework import serializers
-
 from apps.comment.models import Comment
 from apps.task.models import Task
+
 
 
 class TaskSerializer(serializers.ModelSerializer):

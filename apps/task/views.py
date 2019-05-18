@@ -3,23 +3,12 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
-
-from rest_framework.permissions import AllowAny
-<<<<<<< HEAD
-from rest_framework.status import HTTP_204_NO_CONTENT
-from apps.task.serializers import TaskSelfSerializer, FilterTaskSerializer
-=======
-from apps.task.serializers import TaskSelfSerializer, MyFilterSerializer
-
+from apps.task.serializers import FilterTaskSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
-
->>>>>>> f89a30b257c88fdb89fbeed1d436e9fbb1128c88
-
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate
-
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer
 from apps.notification.views import AddNotificationTask
 
 
@@ -105,11 +94,11 @@ class TaskCommentsView(GenericAPIView):
 # task 5
 class UserTaskView(GenericAPIView):
     serializer_class = TaskSerializer
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
 
-    def get(self, request, pk):
-        task = Task.objects.filter(user_assigned=pk)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        task = Task.objects.filter(user_assigned=request.user.id)
         return Response(TaskSerializer(task, many=True).data)
 
 
@@ -132,6 +121,8 @@ class AddTaskSelfView(GenericAPIView):
         )
         task.save()
 
+        AddNotificationTask(task.user_assigned.id, task)
+
         return Response(TaskSerializer(task).data)
 
 
@@ -150,13 +141,10 @@ class FinishTask(GenericAPIView):
 # task 11 filter
 
 class FilterTask(GenericAPIView):
-<<<<<<< HEAD
     serializer_class = FilterTaskSerializer
-=======
 
     serializer_class = MyFilterSerializer
 
->>>>>>> f89a30b257c88fdb89fbeed1d436e9fbb1128c88
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
