@@ -16,3 +16,7 @@ class Task(models.Model):
         (FINISHED, 'finished'),
     ]
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=CREATED)
+
+    @property
+    def is_created(self):
+        return self.status == Task.CREATED

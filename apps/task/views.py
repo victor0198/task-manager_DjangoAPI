@@ -94,11 +94,11 @@ class TaskCommentsView(GenericAPIView):
 # task 5
 class UserTaskView(GenericAPIView):
     serializer_class = TaskSerializer
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
 
-    def get(self, request, pk):
-        task = Task.objects.filter(user_assigned=pk)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        task = Task.objects.filter(user_assigned=request.user.id)
         return Response(TaskSerializer(task, many=True).data)
 
 

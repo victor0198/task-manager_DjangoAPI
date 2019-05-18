@@ -16,7 +16,7 @@ urlpatterns += [
     path('create_self/', AddTaskSelfView.as_view(), name='task_create_self'),
 
     path('task_comments_all/<int:pk>/', TaskCommentsView.as_view(), name='all_commnets'),
-    path('my_tasks/<int:pk>/', UserTaskView.as_view(), name='all_task_user'),
+    path('my_tasks/', UserTaskView.as_view(), name='all_task_user'),
     path('task_finish/<int:pk>', FinishTask.as_view(), name="finish_task"),
     path('task_all_filter/', FilterTask.as_view(), name="filter_task"),
 
