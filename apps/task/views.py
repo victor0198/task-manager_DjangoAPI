@@ -8,7 +8,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer,\
+                                    TaskCommentsSerializer
 from apps.notification.views import AddNotificationTask
 
 
@@ -155,3 +156,14 @@ class FilterTask(GenericAPIView):
         task = Task.objects.filter(status=validated_data["status"], title=validated_data["title"],
                                    user_assigned=validated_data["user_assigned"])
         return Response(TaskSerializer(task, many=True).data)
+
+
+class TaskItemCommentsView(GenericAPIView):
+    serializer_class = TaskCommentsSerializer
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request, pk):
+        blog = get_object_or_404(Task.objects.filter(pk=pk))
+        response_data = TaskCommentsSerializer(blog).data
+        return Response(response_data)

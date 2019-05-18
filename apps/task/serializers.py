@@ -50,3 +50,16 @@ class MyFilterSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=200, required=False)
     status = serializers.CharField(max_length=10, required=False)
     user_assigned = serializers.IntegerField(required=False)
+
+
+class TaskCommentsSerializer(serializers.ModelSerializer):
+    comments = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_comments(obj):
+        comments = Comment.objects.filter(task=obj.id)
+        return CommentsSerializer(comments, many=True).data
+
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'status', 'user_created', 'user_assigned', "comments"]
