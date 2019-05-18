@@ -1,7 +1,7 @@
 from drf_util.decorators import serialize_decorator
 
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from apps.notification.models import Notification
 from apps.task.models import Task
 
@@ -36,23 +36,7 @@ def AddNotificationTaskClosed(user, task):
     notification.save()
 
 
-# task 4: Create a task
-class AddNotificationView(GenericAPIView):
-    serializer_class = NotificationSerializer
 
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    @serialize_decorator(NotificationSerializer)
-    def post(self, request):
-        validated_data = request.serializer.validated_data
-
-        task = Task.objects.create(
-            title=validated_data['title'],
-        )
-        task.save()
-
-        return Response(NotificationSerializer(task).data)
 
 
 # task 15: View my notifications
@@ -60,11 +44,10 @@ class AddNotificationView(GenericAPIView):
 class MyNotificationView(GenericAPIView):
     serializer_class = NotificationSerializer
 
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+    permission_classes = (IsAuthenticated,)
 
-    def get(self, request, pk):
-        notific = Notification.objects.filter(user=pk)
+    def get(self, request):
+        notific = Notification.objects.filter(user=request.user.id)
         return Response(NotificationSerializer(notific, many=True).data)
 
 

@@ -7,7 +7,7 @@ router = DefaultRouter()
 urlpatterns = router.urls
 
 urlpatterns += [
-    path('my_notification/<int:pk>/', MyNotificationView.as_view(), name='my_notification'),
+    path('my_notification/', MyNotificationView.as_view(), name='my_notification'),
     # path('count_new_notification/', CountNewNotifications.as_view(), name='count_notifications_new'),
 
 ]
