@@ -8,7 +8,7 @@ from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer, FilterTaskSerializer
 
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate
 
 from apps.notification.views import AddNotificationTask
 
@@ -32,11 +32,11 @@ class TaskListView(GenericAPIView):
 
 # task 4: Create a task
 class AddTaskView(GenericAPIView):
-    serializer_class = TaskSerializer
+    serializer_class = TaskSerializerCreate
 
     permission_classes = (IsAuthenticated,)
 
-    @serialize_decorator(TaskSerializer)
+    @serialize_decorator(TaskSerializerCreate)
     def post(self, request):
         validated_data = request.serializer.validated_data
 
@@ -122,7 +122,7 @@ class AddTaskSelfView(GenericAPIView):
         )
         task.save()
 
-        return Response(TaskSelfSerializer(task).data)
+        return Response(TaskSerializer(task).data)
 
 
 # task 8

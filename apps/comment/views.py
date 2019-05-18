@@ -3,16 +3,16 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from apps.comment.models import Comment
 from rest_framework.response import Response
-from apps.comment.serializers import CommentSerializer
+from apps.comment.serializers import CommentsSerializer, CommentSerializer
 from apps.notification.views import AddNotificationComment
 
 # task 10
 class AddCommentView(GenericAPIView):
-    serializer_class = CommentSerializer
+    serializer_class = CommentsSerializer
 
     permission_classes = (IsAuthenticated,)
 
-    @serialize_decorator(CommentSerializer)
+    @serialize_decorator(CommentsSerializer)
     def post(self, request):
         validated_data = request.serializer.validated_data
 
