@@ -54,7 +54,8 @@ class AddTaskView(GenericAPIView):
 
         task.save()
 
-        # AddNotificationTask(task.user_assigned, task)
+        if validated_data['user_assigned']:
+            AddNotificationTask(task.user_assigned, task)
 
         return Response(status=201)
 
