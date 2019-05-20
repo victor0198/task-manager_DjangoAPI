@@ -4,8 +4,9 @@ from drf_util.decorators import serialize_decorator
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
-from apps.users.serializers import UserSerializer
+from rest_framework import viewsets
+from apps.users.serializers import UserSearchSerializer, UserSerializer
+from rest_framework import filters
 
 
 class RegisterUserView(GenericAPIView):
@@ -29,3 +30,14 @@ class RegisterUserView(GenericAPIView):
         user.save()
 
         return Response(UserSerializer(user).data)
+
+
+class UserSearchViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    serializer_class = UserSearchSerializer
+    queryset = User.objects.all()
+
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('^username',)
