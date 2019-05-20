@@ -20,7 +20,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     authentication_classes = ()
 
     serializer_class = TaskSerializer
-    queryset = Task.objects.all()
+    queryset = Task.objects.order_by('-id')
 
     pagination_class = PageNumberPagination
     http_method_names = ['get']

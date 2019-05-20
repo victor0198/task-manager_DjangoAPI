@@ -11,15 +11,15 @@ class TaskSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
 
     def get_user_created(self, obj):
-        return {"username:": obj.user_created.username, "id:": obj.user_created.id}
+        return {"username": obj.user_created.username, "id": obj.user_created.id}
 
     def get_user_assigned(self, obj):
-        return {"username:": obj.user_created.username, "id:": obj.user_created.id}
+        return {"username": obj.user_created.username, "id": obj.user_created.id}
 
     @staticmethod
     def get_comments(obj):
         comments = Comment.objects.filter(task=obj.id).count()
-        return {"count_comment:": comments}
+        return {"count_comment": comments}
 
     class Meta:
         model = Task
