@@ -14,11 +14,18 @@ from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSeri
 from apps.notification.views import AddNotificationTask
 from apps.users.serializers import UserTaskSerializer
 from django.contrib.auth.models import User
+from rest_framework.pagination import PageNumberPagination
 
 
 class TaskViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
     serializer_class = TaskSerializer
     queryset = Task.objects.all()
+
+    pagination_class = PageNumberPagination
+    http_method_names = ['get']
 
 
 # Task 3: View list of tasks
@@ -162,8 +169,8 @@ class FilterTask(GenericAPIView):
 
 class TaskItemCommentsView(GenericAPIView):
     serializer_class = TaskCommentsSerializer
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk):
         task = get_object_or_404(Task.objects.filter(pk=pk))
