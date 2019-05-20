@@ -28,16 +28,37 @@ class TaskViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
 
 
-# Task 3: View list of tasks
-class TaskListView(GenericAPIView):
-    serializer_class = TaskSerializer
-
+class TaskFilterStatusCreatedViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    def get(self, request):
-        task = Task.objects.all()
-        return Response(TaskSerializer(task, many=True).data)
+    serializer_class = TaskSerializer
+    queryset = Task.objects.filter(status=Task.CREATED)
+
+    pagination_class = PageNumberPagination
+    http_method_names = ['get']
+
+
+class TaskFilterStatusInprocessViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    serializer_class = TaskSerializer
+    queryset = Task.objects.filter(status=Task.INPROCESS)
+
+    pagination_class = PageNumberPagination
+    http_method_names = ['get']
+
+
+class TaskFilterStatusFinishedViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    serializer_class = TaskSerializer
+    queryset = Task.objects.filter(status=Task.FINISHED)
+
+    pagination_class = PageNumberPagination
+    http_method_names = ['get']
 
 
 # task 4: Create a task

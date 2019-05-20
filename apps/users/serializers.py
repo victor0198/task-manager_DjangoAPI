@@ -10,6 +10,13 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("first_name", "last_name", "username", "password",)
 
 
+class UserSearchSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ("id", "username")
+
+
 class UserTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
