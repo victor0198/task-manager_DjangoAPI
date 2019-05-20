@@ -8,6 +8,21 @@ from apps.users.serializers import UserSerializer, UserTaskSerializer
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    user_assigned = serializers.SerializerMethodField()
+    user_created = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
+
+    def get_user_created(self, obj):
+        return {"username:": obj.user_created.username, "id:": obj.user_created.id}
+
+    def get_user_assigned(self, obj):
+        return {"username:": obj.user_created.username, "id:": obj.user_created.id}
+
+    @staticmethod
+    def get_comments(obj):
+        comments = Comment.objects.filter(task=obj.id).count()
+        return {"count_comment:": comments}
+
     class Meta:
         model = Task
         fields = '__all__'
@@ -73,6 +88,7 @@ class TaskCommentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['title', 'description', 'status', 'user_created', 'user_assigned', "comments"]
+
 
 class TaskUpdateAllSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
