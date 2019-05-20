@@ -5,7 +5,7 @@ from apps.task.views import CompletedTaskListView, DeleteView, AddTaskView, AddT
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-# router.register(r'', TaskViewSet, base_name='all_tasks')
+router.register(r'', TaskViewSet, base_name='all_tasks')
 router.register(r'created', TaskFilterStatusCreatedViewSet, base_name='task_list_status')
 router.register(r'inprocess', TaskFilterStatusInprocessViewSet, base_name='task_list_status')
 router.register(r'finished', TaskFilterStatusFinishedViewSet, base_name='task_list_status')
