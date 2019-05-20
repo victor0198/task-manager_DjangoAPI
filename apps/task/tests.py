@@ -23,7 +23,7 @@ class AnimalTestCase(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_task_list(self):
-        response = self.client.get('/task/tasks_all/')
+        response = self.client.get(reverse('completed_list'))
         self.assertEqual(response.status_code, 200)
 
     def test_task_completed_list(self):
