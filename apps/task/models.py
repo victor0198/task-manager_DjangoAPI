@@ -4,7 +4,8 @@ from django.db import models
 
 class Task(models.Model):
     user_created = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_creat")
-    user_assigned = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_assign", null=True, default=None)
+    user_assigned = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_assign", null=True,
+                                      default=None)
     title = models.CharField(max_length=100)
     description = models.TextField()
     CREATED = 'created'
@@ -20,3 +21,9 @@ class Task(models.Model):
     @property
     def is_created(self):
         return self.status == Task.CREATED
+
+    def is_inprocess(self):
+        return self.status == Task.INPROCES
+
+    def is_finished(self):
+        return self.status == Task.FINISHED

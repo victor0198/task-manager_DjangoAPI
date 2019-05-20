@@ -16,7 +16,7 @@ urlpatterns += [
     path('task_details/<int:pk>/', TaskItemCommentsView.as_view(), name='task_item'),
     path('task_update/', UpdateTask.as_view(), name="update_task"),
 
-    path('<int:pk>/', TaskCommentsView.as_view(), name='all_commnets'),
+    path('<int:pk>/', TaskCommentsView.as_view(), name='tasks_all_details'),
     path('my_tasks/', UserTaskView.as_view(), name='all_task_user'),
     path('task_finish/<int:pk>', FinishTask.as_view(), name="finish_task"),
     path('task_all_filter/', FilterTask.as_view(), name="filter_task"),

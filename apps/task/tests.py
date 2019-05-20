@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework.test import APIClient
 from django.test import TestCase
-
+from apps.task.models import Task
 
 class AnimalTestCase(TestCase):
     def setUp(self):
@@ -28,4 +28,4 @@ class AnimalTestCase(TestCase):
 
     def test_task_completed_list(self):
         response = self.client.get(reverse('completed_list'))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Task.is_finished(response), True)
