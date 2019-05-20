@@ -3,6 +3,8 @@ from rest_framework.exceptions import ValidationError
 
 from apps.comment.models import Comment
 from apps.task.models import Task
+from django.contrib.auth.models import User
+from apps.users.serializers import UserSerializer, UserTaskSerializer
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -46,6 +48,12 @@ class TaskSelfSerializer(serializers.ModelSerializer):
 
 # --------Comments
 class CommentsSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        user = User.objects.filter(id=obj.user.id).first()
+        return {"id": user.id, "username": user.username}
+
     class Meta:
         model = Comment
         fields = ['user', 'text']

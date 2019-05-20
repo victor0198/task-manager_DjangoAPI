@@ -4,11 +4,13 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
-from apps.task.serializers import TaskSelfSerializer, MyFilterSerializer, TaskUpdateAllSerializer, TaskCommentsSerializer
+from apps.task.serializers import FilterTaskSerializer, TaskUpdateAllSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
+from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer, \
+    TaskCommentsSerializer
 from apps.notification.views import AddNotificationTask
 from apps.users.serializers import UserTaskSerializer
 from django.contrib.auth.models import User
