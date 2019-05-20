@@ -1,6 +1,6 @@
 from django.urls import path
 from apps.task.views import CompletedTaskListView, DeleteView, AddTaskView, AddTaskSelfView, FinishTask, \
-    TaskCommentsView, UserTaskView, FilterTask, TaskItemCommentsView, UpdateTask, TaskViewSet
+    TaskCommentsView, UserTaskView, FilterTask, TaskItemCommentsView, UpdateTask, TaskViewSet, TaskFilterStatusView
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -8,6 +8,7 @@ router.register(r'', TaskViewSet, base_name='all_tasks')
 urlpatterns = router.urls
 
 urlpatterns += [
+    path('list_task/<str:status>/', TaskFilterStatusView.as_view(), name='task_list'),
 
     path('completed_task/', CompletedTaskListView.as_view(), name='completed_list'),
     path('delete_task/<int:pk>/', DeleteView.as_view(), name='delete_task'),
