@@ -61,10 +61,10 @@ class DetailTaskSerializer(serializers.ModelSerializer):
     user_created = serializers.SerializerMethodField()
 
     def get_user_created(self, obj):
-        return {"username:": obj.user_created.username, "id:": obj.user_created.id}
+        return {"username": obj.user_created.username, "id:": obj.user_created.id}
 
     def get_user_assigned(self, obj):
-        return {"username:": obj.user_created.username, "id:": obj.user_created.id}
+        return {"username": obj.user_created.username, "id:": obj.user_created.id}
 
     def get_comments(self, obj):
         comments = Comment.objects.filter(task=obj.id)
