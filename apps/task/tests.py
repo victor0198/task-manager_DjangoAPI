@@ -66,7 +66,6 @@ class TaskTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
     # TEST test with permission_classes = (IsAuthenticated,)
-
     # # delete task
     #
     # def test_task_delete(self):
