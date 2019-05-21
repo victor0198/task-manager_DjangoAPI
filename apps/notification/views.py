@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from apps.notification.serializers import NotificationSerializer
 
 
-
 def AddNotificationComment(user, comment):
     notification = Notification.objects.create(
         user=user,
@@ -55,4 +54,3 @@ class CountNewNotifications(GenericAPIView):
         not_true = Notification.objects.filter(seen=False)
         count = len(not_true)
         return Response({"count=": count})
-
