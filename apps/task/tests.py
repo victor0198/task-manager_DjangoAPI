@@ -1,16 +1,9 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
-<<<<<<< HEAD
-from rest_framework.generics import get_object_or_404
-from rest_framework.test import APIClient, APIRequestFactory
 
-from django.test import TestCase
-
-=======
 from rest_framework.test import APIClient
 
 from django.test import TestCase
->>>>>>> master
 from apps.task.models import Task
 
 
@@ -85,11 +78,11 @@ class TaskTestCase(TestCase):
     #     print(response.data)
     #     self.assertEquals(response.status_code, 204)
 
-    def test_finish_task(self):
-        self.client = APIClient()
-        self.client.force_authenticate(user=self.user)
-        self.assertIsNotNone(self.user)
-
-        response = self.client.put(reverse('finish_task', args=(1,)))
-        print(response.data)
-        self.assertEquals(response.status_code, 200)
+    # def test_finish_task(self):
+    #     self.client = APIClient()
+    #     self.client.force_authenticate(user=self.user)
+    #     self.assertIsNotNone(self.user)
+    # 
+    #     response = self.client.put(reverse('finish_task', args=(1,)))
+    #     print(response.data)
+    #     self.assertEquals(response.status_code, 200)
