@@ -119,3 +119,9 @@ class TaskUpdateAllSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ["id", "user_created", "user_assigned", "title", "description", "status"]
+
+
+class TaskSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ('id', 'title')
