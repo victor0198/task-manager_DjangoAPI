@@ -7,6 +7,6 @@ router = DefaultRouter()
 urlpatterns = router.urls
 
 urlpatterns += [
-    path('create/', AddCommentView.as_view(), name='task_create'),
+    path('create_comment/', AddCommentView.as_view(), name='comment_create'),
 
 ]
