@@ -2,10 +2,10 @@
 from django.contrib.auth.models import User
 from drf_util.decorators import serialize_decorator
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets
-from apps.users.serializers import UserSearchSerializer, UserSerializer
+from apps.users.serializers import UserSearchSerializer, UserSerializer, UserMeSerializer
 from rest_framework import filters
 
 
@@ -42,3 +42,15 @@ class UserSearchViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('^username',)
     http_method_names = ['get']
+
+
+class MeDetails(GenericAPIView):
+    serializer_class = UserMeSerializer
+
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user = User.objects.filter(id=request.user.id)
+
+        return Response(UserMeSerializer(user, many=True).data)
+
