@@ -172,9 +172,13 @@ class FinishTask(GenericAPIView):
     authentication_classes = ()
 
     def put(self, request, pk):
-        task = Task.objects.get(pk=pk)
-        task.status = "finished"
-        task.save()
+        task = Task.objects.get(pk=pk).first()
+        if request.user.id != task.user_created and request.user.id != task.user_created:
+            return Response(status=403)
+        else:
+            task.status = "finished"
+            task.save()
+
         return Response(TaskSerializer(task).data)
 
 
@@ -184,9 +188,13 @@ class StartTask(GenericAPIView):
     authentication_classes = ()
 
     def put(self, request, pk):
-        task = Task.objects.get(pk=pk)
-        task.status = "inprocess"
-        task.save()
+        task = Task.objects.get(pk=pk).first()
+        if request.user.id != task.user_created and request.user.id != task.user_created:
+            return Response(status=403)
+        else:
+            task.status = "inprocess"
+            task.save()
+
         return Response(TaskSerializer(task).data)
 
 
