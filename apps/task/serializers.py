@@ -73,13 +73,13 @@ class DetailTaskSerializer(serializers.ModelSerializer):
         return {"username": obj.user_created.username, "id:": obj.user_created.id}
 
     def get_comments(self, obj):
-        comments = Comment.objects.filter(task=obj.id)
+        comments = Comment.objects.filter(task=obj.id).order_by('-id')
         return CommentsSerializer(comments, many=True).data
 
     class Meta:
         model = Task
 
-        fields = ['id', 'title', 'description', 'comments', 'user_created', 'user_assigned']
+        fields = ['id', 'title', 'description', 'status', 'comments', 'user_created', 'user_assigned']
 
 
 class FilterTaskSerializer(serializers.ModelSerializer):

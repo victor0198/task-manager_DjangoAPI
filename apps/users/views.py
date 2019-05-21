@@ -50,7 +50,7 @@ class MeDetails(GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        user = User.objects.filter(id=request.user.id)
+        user = User.objects.filter(id=request.user.id).first()
 
-        return Response(UserMeSerializer(user, many=True).data)
+        return Response(UserMeSerializer(user).data)
 

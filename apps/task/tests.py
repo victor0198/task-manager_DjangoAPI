@@ -29,7 +29,9 @@ class AnimalTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_task_completed_list(self):
+
         response = self.client.get(reverse('completed_list'))
+        print(response.data)
         self.assertEqual(Task.is_finished(response), True)
 
         self.assertEqual(response.status_code, 200)
