@@ -1,10 +1,28 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from apps.comment.models import Comment
 from apps.task.models import Task
+from django.contrib.auth.models import User
+from apps.users.serializers import UserSerializer, UserTaskSerializer
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    user_assigned = serializers.SerializerMethodField()
+    user_created = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
+
+    def get_user_created(self, obj):
+        return {"username": obj.user_created.username, "id": obj.user_created.id}
+
+    def get_user_assigned(self, obj):
+        return {"username": obj.user_created.username, "id": obj.user_created.id}
+
+    @staticmethod
+    def get_comments(obj):
+        comments = Comment.objects.filter(task=obj.id).count()
+        return {"count_comment": comments}
+
     class Meta:
         model = Task
         fields = '__all__'
@@ -13,7 +31,13 @@ class TaskSerializer(serializers.ModelSerializer):
 class TaskSerializerCreate(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ('title', 'description', 'status', 'user_assigned')
+        fields = ('title', 'description', 'user_assigned')
+
+
+class TaskSerializerCreateResponse(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ('title', 'description')
 
 
 class TaskSelfSerializer(serializers.ModelSerializer):
@@ -24,25 +48,74 @@ class TaskSelfSerializer(serializers.ModelSerializer):
 
 # --------Comments
 class CommentsSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        user = User.objects.filter(id=obj.user.id).first()
+        return {"id": user.id, "username": user.username}
+
     class Meta:
         model = Comment
         fields = ['user', 'text']
 
 
+# ------------------------------------------------------------------------------
 class DetailTaskSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
 
+    user_assigned = serializers.SerializerMethodField()
+    user_created = serializers.SerializerMethodField()
+
+    def get_user_created(self, obj):
+        return {"username": obj.user_created.username, "id:": obj.user_created.id}
+
+    def get_user_assigned(self, obj):
+        return {"username": obj.user_created.username, "id:": obj.user_created.id}
+
     def get_comments(self, obj):
-        comments = Comment.objects.filter(task=obj.id)
+        comments = Comment.objects.filter(task=obj.id).order_by('-id')
         return CommentsSerializer(comments, many=True).data
 
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'comments']
 
+        fields = ['id', 'title', 'description', 'status', 'comments', 'user_created', 'user_assigned']
+
+
+class FilterTaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ('status', 'user_assigned', 'title')
 
 
 class MyFilterSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=200, required=False)
     status = serializers.CharField(max_length=10, required=False)
     user_assigned = serializers.IntegerField(required=False)
+
+
+class TaskCommentsSerializer(serializers.ModelSerializer):
+    comments = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_comments(obj):
+        comments = Comment.objects.filter(task=obj.id)
+        return CommentsSerializer(comments, many=True).data
+
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'status', 'user_created', 'user_assigned', "comments"]
+
+
+class TaskUpdateAllSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
+    def validate_id(self, value):
+        task = Task.objects.filter(id=value).first()
+        if not task:
+            raise ValidationError("Not exists")
+        return value
+
+    class Meta:
+        model = Task
+        fields = ["id", "user_created", "user_assigned", "title", "description", "status"]
