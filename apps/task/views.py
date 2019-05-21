@@ -11,7 +11,7 @@ from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
 from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer, \
     TaskCommentsSerializer
-from apps.notification.views import AddNotificationTask
+from apps.notification.views import AddNotificationTask, AddNotificationTaskClosed
 from apps.users.serializers import UserTaskSerializer
 from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
@@ -171,6 +171,18 @@ class FinishTask(GenericAPIView):
     def put(self, request, pk):
         task = Task.objects.get(pk=pk)
         task.status = "finished"
+        task.save()
+        return Response(TaskSerializer(task).data)
+
+
+# task add StartTask
+class StartTask(GenericAPIView):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def put(self, request, pk):
+        task = Task.objects.get(pk=pk)
+        task.status = "inprocess"
         task.save()
         return Response(TaskSerializer(task).data)
 
