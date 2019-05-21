@@ -170,14 +170,15 @@ class AddTaskSelfView(GenericAPIView):
 class UpdateTaskState(GenericAPIView):
     serializer_class = TaskUpdateStateSerializer
 
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+    permission_classes = (IsAuthenticated,)
 
     @serialize_decorator(TaskUpdateStateSerializer)
     def put(self, request):
         validated_data = request.serializer.validated_data
-        task = Task.objects.get(pk=validated_data["id"]).first()
-        if request.user.id != task.user_created and request.user.id != task.user_created:
+        task = Task.objects.get(pk=validated_data["id"])
+        print(request.user.id)
+        print(task.user_created.id)
+        if request.user.id != task.user_created.id or request.user.id != task.user_assigned.id:
             return Response(status=403)
         else:
             task.status = validated_data["status"]
