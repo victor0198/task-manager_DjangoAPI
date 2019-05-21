@@ -1,31 +1,68 @@
+from django.http import JsonResponse
 from drf_util.decorators import serialize_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
-from apps.task.serializers import TaskSelfSerializer, MyFilterSerializer
+from apps.task.serializers import FilterTaskSerializer, TaskUpdateAllSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
+from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer, \
+    TaskCommentsSerializer
 from apps.notification.views import AddNotificationTask
+from apps.users.serializers import UserTaskSerializer
+from django.contrib.auth.models import User
+from rest_framework.pagination import PageNumberPagination
+
+
+class TenResultsSetPagination(PageNumberPagination):
+    page_size = 10
 
 
 class TaskViewSet(viewsets.ModelViewSet):
-    serializer_class = TaskSerializer
-    queryset = Task.objects.all()
-
-
-# Task 3: View list of tasks
-class TaskListView(GenericAPIView):
-    serializer_class = TaskSerializer
-
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    def get(self, request):
-        task = Task.objects.all()
-        return Response(TaskSerializer(task, many=True).data)
+    serializer_class = TaskSerializer
+    queryset = Task.objects.order_by('-id')
+
+    pagination_class = TenResultsSetPagination
+    http_method_names = ['get']
+
+
+class TaskFilterStatusCreatedViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    serializer_class = TaskSerializer
+    queryset = Task.objects.filter(status=Task.CREATED)
+
+    pagination_class = TenResultsSetPagination
+    http_method_names = ['get']
+
+
+class TaskFilterStatusInprocessViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    serializer_class = TaskSerializer
+    queryset = Task.objects.filter(status=Task.INPROCESS)
+
+    pagination_class = TenResultsSetPagination
+    http_method_names = ['get']
+
+
+class TaskFilterStatusFinishedViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    serializer_class = TaskSerializer
+    queryset = Task.objects.filter(status=Task.FINISHED)
+
+    pagination_class = TenResultsSetPagination
+    http_method_names = ['get']
 
 
 # task 4: Create a task
@@ -41,15 +78,18 @@ class AddTaskView(GenericAPIView):
         task = Task.objects.create(
             title=validated_data['title'],
             description=validated_data['description'],
-            status=validated_data['status'],
+            status=Task.CREATED,
             user_created=request.user,
-            user_assigned=validated_data['user_assigned'],
         )
+        if validated_data['user_assigned']:
+            task.user_assigned = validated_data['user_assigned']
+
         task.save()
 
-        AddNotificationTask(task.user_assigned, task)
+        if validated_data['user_assigned']:
+            AddNotificationTask(task.user_assigned, task)
 
-        return Response(TaskSerializer(task).data)
+        return Response(status=201)
 
 
 # Task 6: View Completed tasks
@@ -93,11 +133,11 @@ class TaskCommentsView(GenericAPIView):
 # task 5
 class UserTaskView(GenericAPIView):
     serializer_class = TaskSerializer
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
 
-    def get(self, request, pk):
-        task = Task.objects.filter(user_assigned=pk)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        task = Task.objects.filter(user_assigned=request.user.id)
         return Response(TaskSerializer(task, many=True).data)
 
 
@@ -146,15 +186,63 @@ class FilterTask(GenericAPIView):
     @serialize_decorator(MyFilterSerializer)
     @swagger_auto_schema(query_serializer=MyFilterSerializer)
     def get(self, request):
-        validated_data = request.serializer.validated_data  # 1
-        objects_all = Task.objects.filter()
-        if validated_data.get("status"):
-            objects_all = objects_all.filter(status=validated_data["status"])
+        validated_data = request.serializer.validated_data
+        task = Task.objects.filter(status=validated_data["status"], title=validated_data["title"],
+                                   user_assigned=validated_data["user_assigned"])
+        return Response(TaskSerializer(task, many=True).data)
 
-        if validated_data.get("title"):
-            objects_all = objects_all.filter(title=validated_data["title"])
 
-        if validated_data.get("user_assigned"):
-            objects_all = objects_all.filter(user_assigned=validated_data["user_assigned"])
+class TaskItemCommentsView(GenericAPIView):
+    serializer_class = TaskCommentsSerializer
 
-        return Response(TaskSerializer(objects_all, many=True).data)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        task = get_object_or_404(Task.objects.filter(pk=pk))
+        response_data = TaskCommentsSerializer(task).data
+        return Response(response_data)
+
+
+class TasksAllView(GenericAPIView):
+    serializer_class = TaskSerializer, UserTaskSerializer
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request):
+        print("-1--")
+        tasks_all = []
+        tasks = Task.objects.all()
+
+        for task in tasks:
+            temp_task = TaskSerializer(task).data
+            temp_task.update({'created by': UserTaskSerializer(User.objects.filter(pk=task.user_assigned.id).first())})
+            tasks_all.append(temp_task)
+
+        print("-2--")
+        return JsonResponse(tasks_all, safe=False)
+
+
+class UpdateTask(GenericAPIView):
+    serializer_class = TaskUpdateAllSerializer
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def put(self, request):
+        serializer = TaskUpdateAllSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            task = Task.objects.get(id=data['id'])
+            task.user_created = data["user_created"]
+            task.user_assigned = data["user_assigned"]
+            task.title = data["title"]
+            task.description = data["description"]
+            task.status = data["status"]
+            task.save()
+
+            AddNotificationTask(task.user_assigned, task)
+
+            response_data = TaskSerializer(task).data
+            return Response(response_data)
+        else:
+            return Response(serializer.errors, status=400)

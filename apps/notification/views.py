@@ -1,12 +1,9 @@
-from drf_util.decorators import serialize_decorator
-
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from apps.notification.models import Notification
-from apps.task.models import Task
-
 from rest_framework.response import Response
 from apps.notification.serializers import NotificationSerializer
+
 
 
 def AddNotificationComment(user, comment):
@@ -34,9 +31,6 @@ def AddNotificationTaskClosed(user, task):
     )
     notification.task.add(task)
     notification.save()
-
-
-
 
 
 # task 15: View my notifications

@@ -1,10 +1,11 @@
 from drf_util.decorators import serialize_decorator
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from apps.comment.models import Comment
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from apps.comment.serializers import CommentsSerializer, CommentSerializer
 from apps.notification.views import AddNotificationComment
+from apps.comment.models import Comment
+
 
 # task 10
 class AddCommentView(GenericAPIView):
