@@ -3,16 +3,8 @@ from django.urls import reverse
 from rest_framework.test import APIClient, APIRequestFactory
 
 from django.test import TestCase
-from django.contrib.auth.models import User
-from django.urls import reverse
-from rest_framework.test import APIClient, APIRequestFactory
-
-from django.test import TestCase
-from django.contrib.auth.decorators import login_required
 
 
-# Create your tests here.
-# TEST test with permission_classes = (IsAuthenticated,)
 class TaskTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -27,20 +19,20 @@ class TaskTestCase(TestCase):
         self.user = User.objects.filter(username='string').first()
         self.assertIsNotNone(self.user)
 
-        print(User.objects.filter(username='string').count())
-
         self.client.force_authenticate(self.user)
 
-    @login_required
-    def test_task_create(self):
+
+    def test_comment_create(self):
         self.client = APIClient()
-        self.client.force_authenticate(self.user)
+        self.client.force_authenticate(user=self.user)
+        self.assertIsNotNone(self.user)
 
-        comment = self.client.post(reverse('comment_create'), {
+        response = self.client.post(reverse('comment_create'), {
 
-            "task": 0,
+            "task": 1,
             "text": "string",
 
         })
-        print(comment.data)
-        self.assertEqual(comment.status_code, 200)
+        print(response.data)
+        print(self.user)
+        self.assertEqual(response.status_code, 200)

@@ -18,7 +18,7 @@ class TaskTestCase(TestCase):
             "username": "string",
             "password": "string"
         })
-        # print(response.data)
+        print(response.data)
         self.assertEqual(response.status_code, 200)
         self.user = User.objects.filter(username='string').first()
         self.assertIsNotNone(self.user)
@@ -37,44 +37,47 @@ class TaskTestCase(TestCase):
         response = self.client.get(reverse('completed_list'))
         self.assertEqual(response.status_code, 200)
 
+    """
+            THIS TEST DONT WORKS 
+    """
+
+    # task 4: Create a task
+
+    def test_task_create(self):
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+        self.assertIsNotNone(self.user)
+
+        response = self.client.post(reverse('task_create'), {
+            "title": "string",
+            "description": "string",
+            "status": "created",
+            "user_assigned": 1,
+            "text": "string",
+            "task": 1,
+        })
+        print(response.data)
+        print(self.user)
+        self.assertEqual(response.status_code, 200)
     # TEST test with permission_classes = (IsAuthenticated,)
-    # def test_task_create(self):
-    #     self.client = APIClient()
-    #     self.client.force_authenticate(self.user)
-    #
-    #     self.assertIsNotNone(self.user)
-    #
-    #     response = self.client.post(reverse('task_create'), {
-    #         "title": "string",
-    #         "description": "string",
-    #         "status": "created",
-    #         "user_assigned": 0,
-    #         "text": "string",
-    #         "task": str[0],
-    #     })
-    #     print(response.data)
-    #
-    #     self.assertEqual(response.status_code, 200)
 
     # # delete task
     #
     # def test_task_delete(self):
     #     self.client = APIClient()
-    #     self.test_user = User.objects.filter(username='username')
-    #     self.client.force_authenticate(user=self.test_user)
+    #     self.client.force_authenticate(user=self.user)
+    #     self.assertIsNotNone(self.user)
     #
-    #     response = self.client.delete(reverse('delete_task'))
+    #     response = self.client.delete(reverse('delete_task', args=1))
     #     print(response.data)
-    #     self.assertEquals(response.status_code, 200)
+    #     self.assertEquals(response.status_code, 204)
 
-    # def test_finish_task(self):
-    #     self.client = APIClient()
-    #     test_task = Task.objects.filter(pk=0)
-    #     self.client.force_authenticate(pk=test_task)
-    #
-    #     response = self.client.put(reverse('finish_task'))
-    #     print(response.data)
-    #     self.assertEquals(response.status_code, 200)
+    def test_finish_task(self):
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.assertIsNotNone(self.user)
 
-
-
+        response = self.client.put(reverse('finish_task', args=(1,)))
+        print(response.data)
+        self.assertEquals(response.status_code, 200)

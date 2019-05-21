@@ -3,6 +3,8 @@ from django.test import TestCase
 
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
+
+from apps.notification.models import Notification
 from apps.notification.views import AddNotificationComment, AddNotificationTask, AddNotificationTaskClosed
 
 
@@ -31,6 +33,11 @@ class NotificationTestCase(TestCase):
         response = self.client.get(reverse('my_notification'))
         self.assertEquals(response.status_code, 200)
 
-    def test_AddNotificationComment(self):
-        response = self.client.post('comment')
-        self.assertEquals(response.status_code, 200)
+    # def test_AddNotificationComment(self):
+    #
+    #     test_add = AddNotificationTask(data=self.user)
+    #     if test_add.is_valid():
+    #         return test_add.data
+    #     return test_add.errors
+    #     # response = self.client.post('comment')
+    #     self.assertEquals(test_add.status_code, 200)
