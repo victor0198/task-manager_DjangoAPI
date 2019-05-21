@@ -125,3 +125,17 @@ class TaskSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ('id', 'title')
+
+
+class TaskUpdateStateSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
+    def validate_id(self, value):
+        task = Task.objects.filter(id=value).first()
+        if not task:
+            raise ValidationError("Not exists")
+        return value
+
+    class Meta:
+        model = Task
+        fields = ('id', 'status')
