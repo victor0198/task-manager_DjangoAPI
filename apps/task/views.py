@@ -29,10 +29,6 @@ class TaskViewSet(viewsets.ModelViewSet):
 # Task 3: View list of tasks
 class TaskFilterStatusView(GenericAPIView):
     serializer_class = TaskSerializer
-
-    # pagination_class = PageNumberPagination
-    # http_method_names = ['get']
-
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
@@ -77,7 +73,6 @@ class CompletedTaskListView(GenericAPIView):
 
     def get(self, request):
         task = Task.objects.filter(status=Task.FINISHED)
-
         return Response(TaskSerializer(task, many=True).data)
 
 
