@@ -17,6 +17,10 @@ from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
 
 
+class TenResultsSetPagination(PageNumberPagination):
+    page_size = 10
+
+
 class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     authentication_classes = ()
@@ -24,7 +28,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     queryset = Task.objects.order_by('-id')
 
-    pagination_class = PageNumberPagination
+    pagination_class = TenResultsSetPagination
     http_method_names = ['get']
 
 
@@ -35,7 +39,7 @@ class TaskFilterStatusCreatedViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     queryset = Task.objects.filter(status=Task.CREATED)
 
-    pagination_class = PageNumberPagination
+    pagination_class = TenResultsSetPagination
     http_method_names = ['get']
 
 
@@ -46,7 +50,7 @@ class TaskFilterStatusInprocessViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     queryset = Task.objects.filter(status=Task.INPROCESS)
 
-    pagination_class = PageNumberPagination
+    pagination_class = TenResultsSetPagination
     http_method_names = ['get']
 
 
@@ -57,7 +61,7 @@ class TaskFilterStatusFinishedViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     queryset = Task.objects.filter(status=Task.FINISHED)
 
-    pagination_class = PageNumberPagination
+    pagination_class = TenResultsSetPagination
     http_method_names = ['get']
 
 
