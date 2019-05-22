@@ -3,17 +3,18 @@ from rest_framework import serializers
 
 from apps.comment.models import Comment
 from apps.notification.models import Notification
+from apps.task.models import Task
 
 
 class CommentTaskSerializer(serializers.ModelSerializer):
-    task = serializers.SerializerMethodField()
+    taskk = serializers.SerializerMethodField()
 
-    def get_task(self, obj):
-        return {'task_name': obj.task.title, 'task_id':obj.task.id}
+    def get_taskk(self, obj):
+        return {'task_name': obj.task.title, 'task_id': obj.task.id}
 
     class Meta:
         model = Comment
-        fields = ['task']
+        fields = ['taskk']
 
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -21,14 +22,10 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_comment(obj):
-        comment = Comment.objects.filter(task=obj.id).first()
+        noti = Notification.objects.get(id=obj.id)
+        comment = Comment.objects.filter(task=obj.task.id).first()
         return CommentTaskSerializer(comment).data
 
     class Meta:
         model = Notification
         fields = ['id', 'user', 'task', 'seen', 'comment']
-
-
-
-
-
