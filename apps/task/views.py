@@ -17,6 +17,8 @@ from apps.users.serializers import UserTaskSerializer
 from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import filters
+from apps.notification.models import Notification
+from apps.comment.models import Comment
 
 
 class TenResultsSetPagination(PageNumberPagination):
@@ -115,6 +117,8 @@ class DeleteView(GenericAPIView):
 
     def delete(self, request, pk):
         task = Task.objects.filter(pk=pk, user_created=request.user.id)
+        print(task)
+
         if task.count() == 0:
             return Response(status=403)
         task.delete()
@@ -131,6 +135,30 @@ class TaskCommentsView(GenericAPIView):
     def get(self, request, pk):
         task = get_object_or_404(Task.objects.filter(pk=pk))
         response_data = DetailTaskSerializer(task).data
+
+        for comment in response_data.items():
+            if isinstance(comment[1], list):
+                # print(comment[1][0])
+                a_comment = dict(comment[1][0])
+                id_comment = a_comment.get('id')
+                comment_object = Comment.objects.get(id=id_comment)
+                id_task = comment_object.task
+
+                print(id_comment)
+                print(id_task.id)
+
+                if Notification.objects.filter(task=id_task.id):
+                    notification = Notification.objects.get(task=task.id)
+                    notification.seen = True
+                    notification.save()
+
+        if Notification.objects.filter(task=task.id):
+            notification = Notification.objects.get(task=task.id)
+            notification.seen = True
+            notification.save()
+
+
+
         return Response(response_data)
 
 
