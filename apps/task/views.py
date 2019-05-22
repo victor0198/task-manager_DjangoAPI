@@ -138,26 +138,24 @@ class TaskCommentsView(GenericAPIView):
 
         for comment in response_data.items():
             if isinstance(comment[1], list):
-                # print(comment[1][0])
-                a_comment = dict(comment[1][0])
-                id_comment = a_comment.get('id')
-                comment_object = Comment.objects.get(id=id_comment)
-                id_task = comment_object.task
+                if len(comment[1]) > 1:
+                    a_comment = dict(comment[1][0])
+                    id_comment = a_comment.get('id')
+                    comment_object = Comment.objects.get(id=id_comment)
+                    id_task = comment_object.task
 
-                print(id_comment)
-                print(id_task.id)
+                    print(id_comment)
+                    print(id_task.id)
 
-                if Notification.objects.filter(task=id_task.id):
-                    notification = Notification.objects.get(task=task.id)
-                    notification.seen = True
-                    notification.save()
+                    if Notification.objects.filter(task=id_task.id):
+                        notification = Notification.objects.get(task=task.id)
+                        notification.seen = True
+                        notification.save()
 
         if Notification.objects.filter(task=task.id):
             notification = Notification.objects.get(task=task.id)
             notification.seen = True
             notification.save()
-
-
 
         return Response(response_data)
 

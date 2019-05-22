@@ -31,6 +31,8 @@ class AddCommentView(GenericAPIView):
         task.save()
         comment.save()
 
-        AddNotificationComment(comment.user, comment)
+        print(comment)
+
+        AddNotificationComment(comment.user, comment, task)
 
         return Response(CommentSerializer(comment).data)

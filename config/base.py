@@ -91,7 +91,7 @@ CORS_ALLOW_HEADERS = (
 )
 
 REST_FRAMEWORK = {
-    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%SZ",
+    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%S",
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 5,
     'DEFAULT_AUTHENTICATION_CLASSES': (

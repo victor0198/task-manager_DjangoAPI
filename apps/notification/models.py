@@ -7,6 +7,6 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    task = models.ManyToManyField(Task)
-    comment = models.ManyToManyField(Comment)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True)
     seen = models.BooleanField()
