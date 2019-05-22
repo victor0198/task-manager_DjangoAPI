@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from django.http import JsonResponse
 from drf_util.decorators import serialize_decorator
 from drf_yasg.utils import swagger_auto_schema
@@ -82,6 +82,7 @@ class AddTaskView(GenericAPIView):
             description=validated_data['description'],
             status=Task.CREATED,
             user_created=request.user,
+            date_create_task=datetime.now()
         )
         if validated_data['user_assigned']:
             task.user_assigned = validated_data['user_assigned']

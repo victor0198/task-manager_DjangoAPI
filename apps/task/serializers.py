@@ -31,7 +31,7 @@ class TaskSerializer(serializers.ModelSerializer):
 class TaskSerializerCreate(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ('title', 'description', 'user_assigned')
+        fields = ('title', 'description', 'user_assigned', 'date_create_task')
 
 
 class TaskSerializerCreateResponse(serializers.ModelSerializer):
@@ -83,7 +83,7 @@ class DetailTaskSerializer(serializers.ModelSerializer):
         model = Task
 
         fields = ['id', 'title', 'description', 'status', 'comments', 'user_created', 'user_assigned',
-                  'date_start_task', 'update_task']
+                  'date_create_task', 'update_task']
 
 
 class FilterTaskSerializer(serializers.ModelSerializer):
