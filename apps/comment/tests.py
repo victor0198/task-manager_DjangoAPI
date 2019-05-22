@@ -29,14 +29,14 @@ class TaskTestCase(TestCase):
         self.client.force_authenticate(user=self.user)
         self.assertIsNotNone(self.user)
 
-        response = self.client.post(reverse('comment_create'), AddNotificationComment(user=Comment.user, comment=1), {
+        comment = self.client.post(reverse('comment_create'), {
 
             "task": 1,
             "text": "string",
 
         })
 
-        print(response.data)
+        print(comment.data)
 
         # print(self.user)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(comment.status_code, 200)
