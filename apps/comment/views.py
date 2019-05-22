@@ -8,10 +8,9 @@ from apps.comment.serializers import CommentsSerializer, CommentSerializer
 from apps.notification.views import AddNotificationComment
 from apps.comment.models import Comment
 
-
-
 # task 10
 from apps.task.models import Task
+
 
 class AddCommentView(GenericAPIView):
     serializer_class = CommentsSerializer
