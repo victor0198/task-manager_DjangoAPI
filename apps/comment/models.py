@@ -7,3 +7,4 @@ class Comment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
+    date_create_comment = models.DateTimeField(auto_now=True)
