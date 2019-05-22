@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from apps.notification.serializers import NotificationSerializer
 
 
-
 def AddNotificationComment(user, comment):
     notification = Notification.objects.create(
         user=user,
@@ -37,11 +36,10 @@ def AddNotificationTaskClosed(user, task):
 
 class MyNotificationView(GenericAPIView):
     serializer_class = NotificationSerializer
-
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        notific = Notification.objects.filter(user=request.user.id)
+        notific = Notification.objects.filter(user=request.user.id, seen=False).order_by("-id")
         return Response(NotificationSerializer(notific, many=True).data)
 
 
@@ -56,4 +54,3 @@ class CountNewNotifications(GenericAPIView):
         not_true = Notification.objects.filter(seen=False)
         count = len(not_true)
         return Response({"count=": count})
-

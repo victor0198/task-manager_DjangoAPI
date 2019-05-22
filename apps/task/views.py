@@ -1,3 +1,4 @@
+import datetime
 from django.http import JsonResponse
 from drf_util.decorators import serialize_decorator
 from drf_yasg.utils import swagger_auto_schema
@@ -11,7 +12,7 @@ from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
 from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer, \
     TaskCommentsSerializer, TaskUpdateStateSerializer
-from apps.notification.views import AddNotificationTask, AddNotificationTaskClosed
+from apps.notification.views import AddNotificationTask
 from apps.users.serializers import UserTaskSerializer
 from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
@@ -182,6 +183,8 @@ class UpdateTaskState(GenericAPIView):
             return Response(status=403)
         else:
             task.status = validated_data["status"]
+            task.status = "inprocess"
+            task.date_start_task = datetime.now()
             task.save()
 
         return Response(TaskSerializer(task).data)
