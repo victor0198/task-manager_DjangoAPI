@@ -17,6 +17,8 @@ class Task(models.Model):
         (FINISHED, 'finished'),
     ]
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=CREATED)
+    date_start_task = models.DateTimeField(null=True, blank=True)
+    update = models.DateTimeField(null=True, blank=True)
 
     @property
     def is_created(self):

@@ -1,3 +1,4 @@
+import datetime
 from django.http import JsonResponse
 from drf_util.decorators import serialize_decorator
 from drf_yasg.utils import swagger_auto_schema
@@ -193,6 +194,8 @@ class StartTask(GenericAPIView):
             return Response(status=403)
         else:
             task.status = "inprocess"
+            task.date_start_task = datetime.now()
+
             task.save()
 
         return Response(TaskSerializer(task).data)
