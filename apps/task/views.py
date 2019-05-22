@@ -103,7 +103,6 @@ class CompletedTaskListView(GenericAPIView):
 
     def get(self, request):
         task = Task.objects.filter(status=Task.FINISHED)
-
         return Response(TaskSerializer(task, many=True).data)
 
 

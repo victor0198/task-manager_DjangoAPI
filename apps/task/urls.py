@@ -32,10 +32,7 @@ urlpatterns += [
 
 for i in range(1, 4):
     del urlpatterns[1]
-for i in range(1, 4):
-    del urlpatterns[2]
-for i in range(1, 4):
-    del urlpatterns[3]
+    
 
 # for n in range(10):
 #     for i in range(1, 4):

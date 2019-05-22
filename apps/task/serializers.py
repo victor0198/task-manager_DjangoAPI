@@ -82,7 +82,8 @@ class DetailTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
 
-        fields = ['id', 'title', 'description', 'status', 'comments', 'user_created', 'user_assigned']
+        fields = ['id', 'title', 'description', 'status', 'comments', 'user_created', 'user_assigned',
+                  'date_start_task', 'update_task']
 
 
 class FilterTaskSerializer(serializers.ModelSerializer):

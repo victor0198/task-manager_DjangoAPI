@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from drf_util.decorators import serialize_decorator
 from rest_framework.generics import GenericAPIView
@@ -12,7 +12,6 @@ from apps.comment.models import Comment
 
 # task 10
 from apps.task.models import Task
-
 
 class AddCommentView(GenericAPIView):
     serializer_class = CommentsSerializer
@@ -29,7 +28,7 @@ class AddCommentView(GenericAPIView):
             text=validated_data['text'],
         )
         task = Task.objects.filter(id=comment.task.id)
-        task.update = datetime.now()
+        task.update_task = datetime.now()
         task.save()
         comment.save()
 
