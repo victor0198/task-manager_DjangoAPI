@@ -117,7 +117,6 @@ class DeleteView(GenericAPIView):
 
     def delete(self, request, pk):
         task = Task.objects.filter(pk=pk, user_created=request.user.id)
-        print(task)
 
         if task.count() == 0:
             return Response(status=403)
@@ -143,9 +142,6 @@ class TaskCommentsView(GenericAPIView):
                     id_comment = a_comment.get('id')
                     comment_object = Comment.objects.get(id=id_comment)
                     id_task = comment_object.task
-
-                    print(id_comment)
-                    print(id_task.id)
 
                     if Notification.objects.filter(task=id_task.id):
                         notification = Notification.objects.get(task=task.id)
@@ -246,7 +242,6 @@ class TasksAllView(GenericAPIView):
     authentication_classes = ()
 
     def get(self, request):
-        print("-1--")
         tasks_all = []
         tasks = Task.objects.all()
 
@@ -255,7 +250,6 @@ class TasksAllView(GenericAPIView):
             temp_task.update({'created by': UserTaskSerializer(User.objects.filter(pk=task.user_assigned.id).first())})
             tasks_all.append(temp_task)
 
-        print("-2--")
         return JsonResponse(tasks_all, safe=False)
 
 

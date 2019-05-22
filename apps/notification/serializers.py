@@ -10,8 +10,6 @@ class CommentTaskSerializer(serializers.ModelSerializer):
     taskk = serializers.SerializerMethodField()
 
     def get_taskk(self, obj):
-        print(obj.task.id)
-        print(obj.task.title)
         return {'task_name': obj.task.title, 'task_id': obj.task.id}
 
     class Meta:
@@ -25,11 +23,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_comment(obj):
         noti = Notification.objects.get(id=obj.id)
-        print(noti)
-        print(noti.comment)
         comment = Comment.objects.filter(task=obj.task.id).first()
-        print("---comment object with task details---")
-        print(comment)
         return CommentTaskSerializer(comment).data
 
     class Meta:
