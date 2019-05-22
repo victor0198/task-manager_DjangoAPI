@@ -50,7 +50,7 @@ class NotificationTestCase(TestCase):
         self.client.force_authenticate(user=self.user)
         self.assertIsNotNone(self.user)
 
-        response = self.client.post(AddNotificationTaskClosed(user=User.pk[1], task=2), {
+        response = self.client.post(AddNotificationTaskClosed(user=1, task=1), {
             "user": 1,
             "seen": False,
         })
