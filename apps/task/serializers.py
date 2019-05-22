@@ -67,11 +67,11 @@ class DetailTaskSerializer(serializers.ModelSerializer):
     user_created = serializers.SerializerMethodField()
 
     def get_user_created(self, obj):
-        return {"username": obj.user_created.username, "id:": obj.user_created.id}
+        return {"username": obj.user_created.username, "id": obj.user_created.id}
 
     def get_user_assigned(self, obj):
         if obj.user_assigned:
-            return {"username": obj.user_assigned.username, "id:": obj.user_assigned.id}
+            return {"username": obj.user_assigned.username, "id": obj.user_assigned.id}
         else:
             return None
 
