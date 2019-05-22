@@ -26,7 +26,7 @@ class AddCommentView(GenericAPIView):
             user=request.user,
             text=validated_data['text'],
         )
-        task = Task.objects.filter(id=comment.task.id)
+        task = Task.objects.get(id=comment.task.id)
         task.update_task = datetime.now()
         task.save()
         comment.save()

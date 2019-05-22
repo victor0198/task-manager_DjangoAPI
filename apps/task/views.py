@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from django.http import JsonResponse
 from drf_util.decorators import serialize_decorator
 from drf_yasg.utils import swagger_auto_schema
@@ -11,8 +11,8 @@ from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
 from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer, \
-    TaskCommentsSerializer
-from apps.notification.views import AddNotificationTask, AddNotificationTaskClosed
+    TaskCommentsSerializer, TaskUpdateStateSerializer
+from apps.notification.views import AddNotificationTask
 from apps.users.serializers import UserTaskSerializer
 from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
@@ -82,6 +82,7 @@ class AddTaskView(GenericAPIView):
             description=validated_data['description'],
             status=Task.CREATED,
             user_created=request.user,
+            date_create_task=datetime.now()
         )
         if validated_data['user_assigned']:
             task.user_assigned = validated_data['user_assigned']
@@ -167,41 +168,25 @@ class AddTaskSelfView(GenericAPIView):
 
 
 # task 8
-class FinishTask(GenericAPIView):
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+class UpdateTaskState(GenericAPIView):
+    serializer_class = TaskUpdateStateSerializer
 
-    def put(self, request, pk):
-        task = Task.objects.get(pk=pk).first()
-        if request.user.id != task.user_created and request.user.id != task.user_created:
-            return Response(status=403)
-        else:
-            task.status = "finished"
+    permission_classes = (IsAuthenticated,)
+
+    @serialize_decorator(TaskUpdateStateSerializer)
+    def put(self, request):
+        validated_data = request.serializer.validated_data
+        task = Task.objects.get(pk=validated_data["id"])
+        if (task.user_assigned and request.user.id == task.user_assigned.id) or request.user.id == task.user_created.id:
+            task.status = validated_data["status"]
             task.save()
-
-        return Response(TaskSerializer(task).data)
-
-
-# task add StartTask
-class StartTask(GenericAPIView):
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    def put(self, request, pk):
-        task = Task.objects.get(pk=pk).first()
-        if request.user.id != task.user_created and request.user.id != task.user_created:
-            return Response(status=403)
         else:
-            task.status = "inprocess"
-            task.date_start_task = datetime.now()
-
-            task.save()
+            return Response(status=403)
 
         return Response(TaskSerializer(task).data)
 
 
 # task 11 filter
-
 class FilterTask(GenericAPIView):
     serializer_class = MyFilterSerializer
 

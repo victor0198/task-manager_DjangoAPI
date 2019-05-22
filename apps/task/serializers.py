@@ -31,7 +31,7 @@ class TaskSerializer(serializers.ModelSerializer):
 class TaskSerializerCreate(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ('title', 'description', 'user_assigned')
+        fields = ('title', 'description', 'user_assigned', 'date_create_task')
 
 
 class TaskSerializerCreateResponse(serializers.ModelSerializer):
@@ -56,7 +56,7 @@ class CommentsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['user', 'text']
+        fields = ['user', 'text', 'date_create_comment']
 
 
 # ------------------------------------------------------------------------------
@@ -67,10 +67,13 @@ class DetailTaskSerializer(serializers.ModelSerializer):
     user_created = serializers.SerializerMethodField()
 
     def get_user_created(self, obj):
-        return {"username": obj.user_created.username, "id:": obj.user_created.id}
+        return {"username": obj.user_created.username, "id": obj.user_created.id}
 
     def get_user_assigned(self, obj):
-        return {"username": obj.user_created.username, "id:": obj.user_created.id}
+        if obj.user_assigned:
+            return {"username": obj.user_assigned.username, "id": obj.user_assigned.id}
+        else:
+            return None
 
     def get_comments(self, obj):
         comments = Comment.objects.filter(task=obj.id).order_by('-id')
@@ -79,7 +82,8 @@ class DetailTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
 
-        fields = ['id', 'title', 'description', 'status', 'comments', 'user_created', 'user_assigned']
+        fields = ['id', 'title', 'description', 'status', 'comments', 'user_created', 'user_assigned',
+                  'date_create_task', 'update_task']
 
 
 class FilterTaskSerializer(serializers.ModelSerializer):
@@ -125,3 +129,17 @@ class TaskSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ('id', 'title')
+
+
+class TaskUpdateStateSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
+    def validate_id(self, value):
+        task = Task.objects.filter(id=value).first()
+        if not task:
+            raise ValidationError("Not exists")
+        return value
+
+    class Meta:
+        model = Task
+        fields = ('id', 'status')
