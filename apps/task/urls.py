@@ -8,7 +8,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'', TaskViewSet, base_name='all_tasks')
 router.register(r'created', TaskFilterStatusCreatedViewSet, base_name='task_list_status')
-router.register(r'opened', TaskFilterStatusInprocessViewSet, base_name='task_list_status')
+router.register(r'open', TaskFilterStatusInprocessViewSet, base_name='task_list_status')
 router.register(r'closed', TaskFilterStatusFinishedViewSet, base_name='task_list_status')
 router.register(r'search', TaskSearchViewSet, base_name='all_tasks')
 urlpatterns = router.urls
@@ -29,12 +29,5 @@ urlpatterns += [
     path('task_all_filter/', FilterTask.as_view(), name="filter_task"),
 
 ]
-
-for i in range(1, 4):
-    del urlpatterns[1]
-for i in range(1, 4):
-    del urlpatterns[2]
-for i in range(1, 4):
-    del urlpatterns[3]
 
 

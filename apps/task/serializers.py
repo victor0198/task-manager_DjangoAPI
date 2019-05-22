@@ -70,7 +70,10 @@ class DetailTaskSerializer(serializers.ModelSerializer):
         return {"username": obj.user_created.username, "id:": obj.user_created.id}
 
     def get_user_assigned(self, obj):
-        return {"username": obj.user_created.username, "id:": obj.user_created.id}
+        if obj.user_assigned:
+            return {"username": obj.user_assigned.username, "id:": obj.user_assigned.id}
+        else:
+            return None
 
     def get_comments(self, obj):
         comments = Comment.objects.filter(task=obj.id).order_by('-id')

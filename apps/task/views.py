@@ -177,15 +177,11 @@ class UpdateTaskState(GenericAPIView):
     def put(self, request):
         validated_data = request.serializer.validated_data
         task = Task.objects.get(pk=validated_data["id"])
-        print(request.user.id)
-        print(task.user_created.id)
-        if request.user.id != task.user_created.id or request.user.id != task.user_assigned.id:
-            return Response(status=403)
-        else:
+        if (task.user_assigned and request.user.id == task.user_assigned.id) or request.user.id == task.user_created.id:
             task.status = validated_data["status"]
-            task.status = "inprocess"
-            task.date_start_task = datetime.now()
             task.save()
+        else:
+            return Response(status=403)
 
         return Response(TaskSerializer(task).data)
 
