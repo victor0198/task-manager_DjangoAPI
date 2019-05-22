@@ -3,6 +3,8 @@ from rest_framework.exceptions import ValidationError
 
 from apps.comment.models import Comment
 from apps.task.models import Task
+from django.contrib.auth.models import User
+from apps.users.serializers import UserSerializer, UserTaskSerializer
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -46,6 +48,12 @@ class TaskSelfSerializer(serializers.ModelSerializer):
 
 # --------Comments
 class CommentsSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        user = User.objects.filter(id=obj.user.id).first()
+        return {"id": user.id, "username": user.username}
+
     class Meta:
         model = Comment
         fields = ['user', 'text']
@@ -65,15 +73,14 @@ class DetailTaskSerializer(serializers.ModelSerializer):
         return {"username": obj.user_created.username, "id:": obj.user_created.id}
 
     def get_comments(self, obj):
-        comments = Comment.objects.filter(task=obj.id)
+        comments = Comment.objects.filter(task=obj.id).order_by('-id')
         return CommentsSerializer(comments, many=True).data
 
     class Meta:
         model = Task
-        fields = ['user_assigned', 'user_created', 'id', 'title', 'description', 'comments']
 
+        fields = ['id', 'title', 'description', 'status', 'comments', 'user_created', 'user_assigned']
 
-# ----------------------------------------------------------------------------------
 
 class FilterTaskSerializer(serializers.ModelSerializer):
     class Meta:
@@ -112,3 +119,9 @@ class TaskUpdateAllSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ["id", "user_created", "user_assigned", "title", "description", "status"]
+
+
+class TaskSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ('id', 'title')

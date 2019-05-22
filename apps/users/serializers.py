@@ -11,7 +11,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserSearchSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ("id", "username")
@@ -21,3 +20,9 @@ class UserTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("first_name", "last_name")
+
+
+class UserMeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "username", "first_name", "last_name")

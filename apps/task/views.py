@@ -1,18 +1,26 @@
+import datetime
 from django.http import JsonResponse
 from drf_util.decorators import serialize_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
-from apps.task.serializers import TaskSelfSerializer, MyFilterSerializer, TaskUpdateAllSerializer, TaskCommentsSerializer
+from apps.task.serializers import TaskUpdateAllSerializer, TaskSearchSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
+from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate
-from apps.notification.views import AddNotificationTask
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer, \
+    TaskCommentsSerializer
+from apps.notification.views import AddNotificationTask, AddNotificationTaskClosed
 from apps.users.serializers import UserTaskSerializer
 from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
+from rest_framework import filters
+
+
+class TenResultsSetPagination(PageNumberPagination):
+    page_size = 10
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -22,19 +30,41 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     queryset = Task.objects.order_by('-id')
 
-    pagination_class = PageNumberPagination
+    pagination_class = TenResultsSetPagination
     http_method_names = ['get']
 
 
-# Task 3: View list of tasks
-class TaskFilterStatusView(GenericAPIView):
-    serializer_class = TaskSerializer
+class TaskFilterStatusCreatedViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    def get(self, request, status):
-        task = Task.objects.filter(status=status)
-        return Response(TaskSerializer(task, many=True).data)
+    serializer_class = TaskSerializer
+    queryset = Task.objects.filter(status=Task.CREATED).order_by('-id')
+
+    pagination_class = TenResultsSetPagination
+    http_method_names = ['get']
+
+
+class TaskFilterStatusInprocessViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    serializer_class = TaskSerializer
+    queryset = Task.objects.filter(status=Task.INPROCESS).order_by('-id')
+
+    pagination_class = TenResultsSetPagination
+    http_method_names = ['get']
+
+
+class TaskFilterStatusFinishedViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    serializer_class = TaskSerializer
+    queryset = Task.objects.filter(status=Task.FINISHED).order_by('-id')
+
+    pagination_class = TenResultsSetPagination
+    http_method_names = ['get']
 
 
 # task 4: Create a task
@@ -83,7 +113,9 @@ class DeleteView(GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def delete(self, request, pk):
-        task = get_object_or_404(Task.objects.filter(pk=pk))
+        task = Task.objects.filter(pk=pk, user_created=request.user.id)
+        if task.count() == 0:
+            return Response(status=403)
         task.delete()
         return Response(status=HTTP_204_NO_CONTENT)
 
@@ -140,9 +172,31 @@ class FinishTask(GenericAPIView):
     authentication_classes = ()
 
     def put(self, request, pk):
-        task = Task.objects.get(pk=pk)
-        task.status = "finished"
-        task.save()
+        task = Task.objects.get(pk=pk).first()
+        if request.user.id != task.user_created and request.user.id != task.user_created:
+            return Response(status=403)
+        else:
+            task.status = "finished"
+            task.save()
+
+        return Response(TaskSerializer(task).data)
+
+
+# task add StartTask
+class StartTask(GenericAPIView):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def put(self, request, pk):
+        task = Task.objects.get(pk=pk).first()
+        if request.user.id != task.user_created and request.user.id != task.user_created:
+            return Response(status=403)
+        else:
+            task.status = "inprocess"
+            task.date_start_task = datetime.now()
+
+            task.save()
+
         return Response(TaskSerializer(task).data)
 
 
@@ -217,3 +271,15 @@ class UpdateTask(GenericAPIView):
             return Response(response_data)
         else:
             return Response(serializer.errors, status=400)
+
+
+class TaskSearchViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    serializer_class = TaskSearchSerializer
+    queryset = Task.objects.all()
+
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('$title', '$description')
+    http_method_names = ['get']
