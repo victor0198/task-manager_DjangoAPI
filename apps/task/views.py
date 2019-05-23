@@ -19,7 +19,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework import filters
 from apps.notification.models import Notification
 from apps.comment.models import Comment
-
+import base64
+import json
 
 class TenResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -117,7 +118,6 @@ class DeleteView(GenericAPIView):
 
     def delete(self, request, pk):
         task = Task.objects.filter(pk=pk, user_created=request.user.id)
-        print(task)
 
         if task.count() == 0:
             return Response(status=403)
@@ -133,31 +133,42 @@ class TaskCommentsView(GenericAPIView):
     authentication_classes = ()
 
     def get(self, request, pk):
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split()
+
+            if not token[1]=="undefined":
+                id_user_in_token = token[1].split(".")
+                # print(base64.b64decode(id_user_in_token[1]))
+                data = json.loads(base64.b64decode(id_user_in_token[1]))
+                user_identification = data["user_id"]
+            else:
+                user_identification = None
+        except Exception as e:
+            user_identification = None
+            print("request.META doesn't exist")
+
         task = get_object_or_404(Task.objects.filter(pk=pk))
         response_data = DetailTaskSerializer(task).data
 
         for comment in response_data.items():
             if isinstance(comment[1], list):
-                # print(comment[1][0])
-                a_comment = dict(comment[1][0])
-                id_comment = a_comment.get('id')
-                comment_object = Comment.objects.get(id=id_comment)
-                id_task = comment_object.task
+                if len(comment[1]) > 1:
+                    a_comment = dict(comment[1][0])
+                    id_comment = a_comment.get('id')
+                    comment_object = Comment.objects.get(id=id_comment)
+                    id_task = comment_object.task
 
-                print(id_comment)
-                print(id_task.id)
-
-                if Notification.objects.filter(task=id_task.id):
-                    notification = Notification.objects.get(task=task.id)
-                    notification.seen = True
-                    notification.save()
-
-        if Notification.objects.filter(task=task.id):
-            notification = Notification.objects.get(task=task.id)
-            notification.seen = True
-            notification.save()
-
-
+                    if user_identification:
+                        if Notification.objects.filter(task=id_task.id, user=user_identification):
+                            for a_notification in Notification.objects.filter(task=task.id):
+                                print(a_notification)
+                                a_notification.seen = True
+                                a_notification.save()
+        if user_identification:
+            if Notification.objects.filter(task=task.id, user=user_identification):
+                for a_notification in Notification.objects.filter(task=task.id):
+                    a_notification.seen = True
+                    a_notification.save()
 
         return Response(response_data)
 
@@ -248,7 +259,6 @@ class TasksAllView(GenericAPIView):
     authentication_classes = ()
 
     def get(self, request):
-        print("-1--")
         tasks_all = []
         tasks = Task.objects.all()
 
@@ -257,7 +267,6 @@ class TasksAllView(GenericAPIView):
             temp_task.update({'created by': UserTaskSerializer(User.objects.filter(pk=task.user_assigned.id).first())})
             tasks_all.append(temp_task)
 
-        print("-2--")
         return JsonResponse(tasks_all, safe=False)
 
 

@@ -31,6 +31,9 @@ class AddCommentView(GenericAPIView):
         task.save()
         comment.save()
 
-        AddNotificationComment(comment.user, comment)
+        if request.user != comment.task.user_assigned:
+            AddNotificationComment(comment.task.user_assigned, comment, task)
+        if request.user != comment.task.user_created:
+            AddNotificationComment(comment.task.user_created, comment, task)
 
         return Response(CommentSerializer(comment).data)

@@ -5,21 +5,24 @@ from rest_framework.response import Response
 from apps.notification.serializers import NotificationSerializer
 
 
-def AddNotificationComment(user, comment):
+def AddNotificationComment(user, comment, task):
     notification = Notification.objects.create(
         user=user,
+        task=task,
+        comment=comment,
         seen=False
     )
-    notification.comment.add(comment)
+
     notification.save()
 
 
 def AddNotificationTask(user, task):
     notification = Notification.objects.create(
         user=user,
+        task=task,
         seen=False
     )
-    notification.task.add(task)
+
     notification.save()
 
 
