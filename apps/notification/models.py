@@ -10,3 +10,4 @@ class Notification(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True)
     seen = models.BooleanField()
+    status = models.CharField(max_length=10, null=True)

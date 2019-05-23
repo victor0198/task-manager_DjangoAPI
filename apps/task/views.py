@@ -12,7 +12,7 @@ from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
 from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer, \
     TaskCommentsSerializer, TaskUpdateStateSerializer
-from apps.notification.views import AddNotificationTask
+from apps.notification.views import AddNotificationTask, AddNotificationTaskStatus
 from apps.users.serializers import UserTaskSerializer
 from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
@@ -93,7 +93,7 @@ class AddTaskView(GenericAPIView):
         task.save()
 
         if validated_data['user_assigned']:
-            AddNotificationTask(task.user_assigned, task)
+            AddNotificationTaskStatus(task.user_assigned, task, "created")
 
         return Response(status=201)
 
@@ -159,13 +159,15 @@ class TaskCommentsView(GenericAPIView):
                     id_task = comment_object.task
 
                     if user_identification:
-                        if Notification.objects.filter(task=id_task.id, user=user_identification):
-                            for a_notification in Notification.objects.filter(task=task.id):
+                        notifics = Notification.objects.filter(task=task.id, user=user_identification)
+                        if notifics:
+                            for a_notification in notifics:
                                 a_notification.seen = True
                                 a_notification.save()
         if user_identification:
-            if Notification.objects.filter(task=task.id, user=user_identification):
-                for a_notification in Notification.objects.filter(task=task.id):
+            notifics = Notification.objects.filter(task=task.id, user=user_identification)
+            if notifics:
+                for a_notification in notifics:
                     a_notification.seen = True
                     a_notification.save()
 
@@ -218,6 +220,32 @@ class UpdateTaskState(GenericAPIView):
         if (task.user_assigned and request.user.id == task.user_assigned.id) or request.user.id == task.user_created.id:
             task.status = validated_data["status"]
             task.save()
+
+            if validated_data["status"] == "finished":
+                people = []
+
+                if request.user != task.user_assigned:
+                    people.append(task.user_assigned.id)
+                if request.user != task.user_created:
+                    people.append(task.user_created.id)
+
+                comments = Comment.objects.filter(task=task)
+                for one_comment in comments:
+                    print(one_comment)
+                    if request.user != one_comment.user:
+                        people.append(one_comment.user.id)
+                print(people)
+                people = list(dict.fromkeys(people))
+                print(people)
+                users = User.objects.filter(pk__in=people)
+                print(users)
+                print("--notification to:--")
+                for user in users:
+                    print(user)
+                    AddNotificationTaskStatus(user, task, "finished")
+                    # if request.user != task.user_assigned and request.user != task.user_created:
+                    #     AddNotificationTask(task.user_assigned, task)
+
         else:
             return Response(status=403)
 
@@ -286,7 +314,7 @@ class UpdateTask(GenericAPIView):
             task.status = data["status"]
             task.save()
 
-            AddNotificationTask(task.user_assigned, task)
+            AddNotificationTaskStatus(task.user_assigned, task, data["status"])
 
             response_data = TaskSerializer(task).data
             return Response(response_data)
