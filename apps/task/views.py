@@ -22,6 +22,7 @@ from apps.comment.models import Comment
 import base64
 import json
 
+
 class TenResultsSetPagination(PageNumberPagination):
     page_size = 10
 
@@ -136,7 +137,7 @@ class TaskCommentsView(GenericAPIView):
         try:
             token = request.META['HTTP_AUTHORIZATION'].split()
 
-            if not token[1]=="undefined":
+            if not token[1] == "undefined":
                 id_user_in_token = token[1].split(".")
                 # print(base64.b64decode(id_user_in_token[1]))
                 data = json.loads(base64.b64decode(id_user_in_token[1]))
@@ -250,22 +251,6 @@ class UpdateTaskState(GenericAPIView):
             return Response(status=403)
 
         return Response(TaskSerializer(task).data)
-
-
-# task 11 filter
-class FilterTask(GenericAPIView):
-    serializer_class = MyFilterSerializer
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    @serialize_decorator(MyFilterSerializer)
-    @swagger_auto_schema(query_serializer=MyFilterSerializer)
-    def get(self, request):
-        validated_data = request.serializer.validated_data
-        task = Task.objects.filter(status=validated_data["status"], title=validated_data["title"],
-                                   user_assigned=validated_data["user_assigned"])
-        return Response(TaskSerializer(task, many=True).data)
 
 
 class TaskItemCommentsView(GenericAPIView):

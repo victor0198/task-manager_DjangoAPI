@@ -92,12 +92,6 @@ class FilterTaskSerializer(serializers.ModelSerializer):
         fields = ('status', 'user_assigned', 'title')
 
 
-class MyFilterSerializer(serializers.Serializer):
-    title = serializers.CharField(max_length=200, required=False)
-    status = serializers.CharField(max_length=10, required=False)
-    user_assigned = serializers.IntegerField(required=False)
-
-
 class TaskCommentsSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
 
