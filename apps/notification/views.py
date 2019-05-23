@@ -10,7 +10,8 @@ def AddNotificationComment(user, comment, task):
         user=user,
         task=task,
         comment=comment,
-        seen=False
+        seen=False,
+        status=None
     )
 
     notification.save()
@@ -20,24 +21,28 @@ def AddNotificationTask(user, task):
     notification = Notification.objects.create(
         user=user,
         task=task,
-        seen=False
+        seen=False,
+        status=None
     )
 
     notification.save()
 
 
-def AddNotificationTaskClosed(user, task):
+def AddNotificationTaskStatus(user, task, status):
     notification = Notification.objects.create(
         user=user,
-        seen=False
+        task=task,
+        seen=False,
+        status=status
     )
-    notification.task.add(task)
+
     notification.save()
 
 
 # task 15: View my notifications
 
 class MyNotificationView(GenericAPIView):
+
     serializer_class = NotificationSerializer
     permission_classes = (IsAuthenticated,)
 

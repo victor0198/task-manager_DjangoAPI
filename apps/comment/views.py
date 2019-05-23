@@ -33,7 +33,7 @@ class AddCommentView(GenericAPIView):
 
         people = []
 
-        if request.user != comment.task.user_assigned:
+        if comment.task.user_assigned and request.user != comment.task.user_assigned:
             people.append(comment.task.user_assigned.id)
         if request.user != comment.task.user_created:
             people.append(comment.task.user_created.id)
@@ -50,7 +50,12 @@ class AddCommentView(GenericAPIView):
         # print(users)
         print("--notification to:--")
         for user in users:
-            # print(user)
+            print(user)
             AddNotificationComment(user, comment, task)
+
+        # if comment.task.user_assigned and request.user != comment.task.user_assigned:
+        #     AddNotificationComment(comment.task.user_assigned, comment, task)
+        # elif request.user != comment.task.user_created:
+        #     AddNotificationComment(comment.task.user_created, comment, task)
 
         return Response(CommentSerializer(comment).data)
