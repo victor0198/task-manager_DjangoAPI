@@ -19,7 +19,6 @@ class CommentTaskSerializer(serializers.ModelSerializer):
 
 class NotificationSerializer(serializers.ModelSerializer):
     comment = serializers.SerializerMethodField()
-    task = serializers.SerializerMethodField()
 
     @staticmethod
     def get_comment(obj):
@@ -27,9 +26,11 @@ class NotificationSerializer(serializers.ModelSerializer):
         comment = Comment.objects.filter(task=obj.task.id).first()
         return CommentTaskSerializer(comment).data
 
-    def get_task(self, obj):
-        return {'task_id': obj.task.id, 'task_title': obj.task.title, 'task_status': obj.task.status}
-
     class Meta:
         model = Notification
         fields = ['id', 'user', 'task', 'seen', 'comment']
+
+
+
+
+
