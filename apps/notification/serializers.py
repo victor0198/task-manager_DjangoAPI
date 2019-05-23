@@ -38,8 +38,4 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-<<<<<<< HEAD
-        fields = ['id', 'user', 'task', 'seen', 'comment']
-=======
         fields = ['id', 'user', 'task', 'seen', 'comment', 'status']
->>>>>>> ec6771cd299ab2362d8bf1ba6655adeebfd7ad74
