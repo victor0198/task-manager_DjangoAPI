@@ -161,7 +161,6 @@ class TaskCommentsView(GenericAPIView):
                     if user_identification:
                         if Notification.objects.filter(task=id_task.id, user=user_identification):
                             for a_notification in Notification.objects.filter(task=task.id):
-                                print(a_notification)
                                 a_notification.seen = True
                                 a_notification.save()
         if user_identification:

@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from django.contrib.auth.models import User
 from drf_util.decorators import serialize_decorator
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -31,9 +31,26 @@ class AddCommentView(GenericAPIView):
         task.save()
         comment.save()
 
+        people = []
+
         if request.user != comment.task.user_assigned:
-            AddNotificationComment(comment.task.user_assigned, comment, task)
+            people.append(comment.task.user_assigned.id)
         if request.user != comment.task.user_created:
-            AddNotificationComment(comment.task.user_created, comment, task)
+            people.append(comment.task.user_created.id)
+
+        comments = Comment.objects.filter(task=task)
+        for one_comment in comments:
+            # print(one_comment)
+            if request.user != one_comment.user:
+                people.append(one_comment.user.id)
+        # print(people)
+        people = list(dict.fromkeys(people))
+        # print(people)
+        users = User.objects.filter(pk__in=people)
+        # print(users)
+        print("--notification to:--")
+        for user in users:
+            # print(user)
+            AddNotificationComment(user, comment, task)
 
         return Response(CommentSerializer(comment).data)
