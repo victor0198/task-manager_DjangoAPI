@@ -1,6 +1,6 @@
 from django.urls import path
 from apps.task.views import CompletedTaskListView, DeleteView, AddTaskView, AddTaskSelfView, UpdateTaskState, \
-    TaskCommentsView, UserTaskView, FilterTask, TaskItemCommentsView, UpdateTask, TaskViewSet, \
+    TaskCommentsView, UserTaskView, TaskItemCommentsView, UpdateTask, TaskViewSet, \
     TaskFilterStatusCreatedViewSet, TaskFilterStatusInprocessViewSet, TaskFilterStatusFinishedViewSet, \
     TaskSearchViewSet
 from rest_framework.routers import DefaultRouter

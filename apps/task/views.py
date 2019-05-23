@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, MyFilterSerializer, \
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, \
     TaskCommentsSerializer, TaskUpdateStateSerializer
 from apps.notification.views import AddNotificationTask, AddNotificationTaskStatus
 from apps.users.serializers import UserTaskSerializer
