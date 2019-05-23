@@ -7,14 +7,14 @@ from apps.task.models import Task
 
 
 class CommentTaskSerializer(serializers.ModelSerializer):
-    taskk = serializers.SerializerMethodField()
+    task = serializers.SerializerMethodField()
 
-    def get_taskk(self, obj):
-        return {'task_name': obj.task.title, 'task_id': obj.task.id}
+    def get_task(self, obj):
+        return {'title': obj.task.title, 'id': obj.task.id}
 
     class Meta:
         model = Comment
-        fields = ['taskk']
+        fields = ['task']
 
 
 class NotificationSerializer(serializers.ModelSerializer):

@@ -33,6 +33,7 @@ class AddCommentView(GenericAPIView):
 
         print(comment)
 
-        AddNotificationComment(comment.user, comment, task)
+        AddNotificationComment(comment.task.user_assigned, comment, task)
+        AddNotificationComment(comment.task.user_created, comment, task)
 
         return Response(CommentSerializer(comment).data)

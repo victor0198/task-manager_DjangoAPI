@@ -19,7 +19,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework import filters
 from apps.notification.models import Notification
 from apps.comment.models import Comment
-
+import base64
+import json
 
 class TenResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -132,6 +133,20 @@ class TaskCommentsView(GenericAPIView):
     authentication_classes = ()
 
     def get(self, request, pk):
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split()
+
+            if not token[1]=="undefined":
+                id_user_in_token = token[1].split(".")
+                # print(base64.b64decode(id_user_in_token[1]))
+                data = json.loads(base64.b64decode(id_user_in_token[1]))
+                user_identification = data["user_id"]
+            else:
+                user_identification = None
+        except Exception as e:
+            user_identification = None
+            print("request.META doesn't exist")
+
         task = get_object_or_404(Task.objects.filter(pk=pk))
         response_data = DetailTaskSerializer(task).data
 
@@ -143,15 +158,17 @@ class TaskCommentsView(GenericAPIView):
                     comment_object = Comment.objects.get(id=id_comment)
                     id_task = comment_object.task
 
-                    if Notification.objects.filter(task=id_task.id):
-                        notification = Notification.objects.get(task=task.id)
-                        notification.seen = True
-                        notification.save()
-
-        if Notification.objects.filter(task=task.id):
-            notification = Notification.objects.get(task=task.id)
-            notification.seen = True
-            notification.save()
+                    if user_identification:
+                        if Notification.objects.filter(task=id_task.id, user=user_identification):
+                            for a_notification in Notification.objects.filter(task=task.id):
+                                print(a_notification)
+                                a_notification.seen = True
+                                a_notification.save()
+        if user_identification:
+            if Notification.objects.filter(task=task.id, user=user_identification):
+                for a_notification in Notification.objects.filter(task=task.id):
+                    a_notification.seen = True
+                    a_notification.save()
 
         return Response(response_data)
 
