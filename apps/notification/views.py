@@ -17,17 +17,6 @@ def AddNotificationComment(user, comment, task):
     notification.save()
 
 
-def AddNotificationTask(user, task):
-    notification = Notification.objects.create(
-        user=user,
-        task=task,
-        seen=False,
-        status=None
-    )
-
-    notification.save()
-
-
 def AddNotificationTaskStatus(user, task, status):
     notification = Notification.objects.create(
         user=user,
@@ -50,15 +39,3 @@ class MyNotificationView(GenericAPIView):
         notific = Notification.objects.filter(user=request.user.id, seen=False).order_by("-id")
         return Response(NotificationSerializer(notific, many=True).data)
 
-
-# task 16: View count of new notifications
-
-class CountNewNotifications(GenericAPIView):
-    serializer_class = NotificationSerializer
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    def get(self, request):
-        not_true = Notification.objects.filter(seen=False)
-        count = len(not_true)
-        return Response({"count=": count})

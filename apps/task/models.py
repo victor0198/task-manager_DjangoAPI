@@ -20,12 +20,10 @@ class Task(models.Model):
     date_create_task = models.DateTimeField(null=True, blank=True)
     update_task = models.DateTimeField(null=True, blank=True)
 
-    @property
-    def is_created(self):
-        return self.status == Task.CREATED
-
-    def is_inprocess(self):
-        return self.status == Task.INPROCESS
-
+    @staticmethod
     def is_finished(self):
         return self.status == Task.FINISHED
+
+    @staticmethod
+    def get_status(self):
+        return self.status

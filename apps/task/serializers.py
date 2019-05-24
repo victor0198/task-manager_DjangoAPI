@@ -92,19 +92,6 @@ class FilterTaskSerializer(serializers.ModelSerializer):
         fields = ('status', 'user_assigned', 'title')
 
 
-class TaskCommentsSerializer(serializers.ModelSerializer):
-    comments = serializers.SerializerMethodField()
-
-    @staticmethod
-    def get_comments(obj):
-        comments = Comment.objects.filter(task=obj.id)
-        return CommentsSerializer(comments, many=True).data
-
-    class Meta:
-        model = Task
-        fields = ['title', 'description', 'status', 'user_created', 'user_assigned', "comments"]
-
-
 class TaskUpdateAllSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
 

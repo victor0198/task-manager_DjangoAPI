@@ -10,10 +10,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, \
-    TaskCommentsSerializer, TaskUpdateStateSerializer
-from apps.notification.views import AddNotificationTask, AddNotificationTaskStatus
-from apps.users.serializers import UserTaskSerializer
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, TaskUpdateStateSerializer
+from apps.notification.views import AddNotificationTaskStatus
 from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import filters
@@ -133,7 +131,7 @@ class TaskCommentsView(GenericAPIView):
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    def get(self, request, pk):
+    def get(self, request, pk=0):
         try:
             token = request.META['HTTP_AUTHORIZATION'].split()
 
@@ -225,84 +223,52 @@ class UpdateTaskState(GenericAPIView):
             if validated_data["status"] == "finished":
                 people = []
 
-                if request.user != task.user_assigned:
+                if task.user_assigned and request.user != task.user_assigned:
                     people.append(task.user_assigned.id)
                 if request.user != task.user_created:
                     people.append(task.user_created.id)
 
                 comments = Comment.objects.filter(task=task)
                 for one_comment in comments:
-                    print(one_comment)
                     if request.user != one_comment.user:
                         people.append(one_comment.user.id)
-                print(people)
-                people = list(dict.fromkeys(people))
-                print(people)
-                users = User.objects.filter(pk__in=people)
-                print(users)
-                print("--notification to:--")
-                for user in users:
-                    print(user)
-                    AddNotificationTaskStatus(user, task, "finished")
-                    # if request.user != task.user_assigned and request.user != task.user_created:
-                    #     AddNotificationTask(task.user_assigned, task)
 
+                people = list(dict.fromkeys(people))
+                users = User.objects.filter(pk__in=people)
+
+                for user in users:
+                    AddNotificationTaskStatus(user, task, "finished")
         else:
             return Response(status=403)
 
         return Response(TaskSerializer(task).data)
 
 
-class TaskItemCommentsView(GenericAPIView):
-    serializer_class = TaskCommentsSerializer
-
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request, pk):
-        task = get_object_or_404(Task.objects.filter(pk=pk))
-        response_data = TaskCommentsSerializer(task).data
-        return Response(response_data)
-
-
-class TasksAllView(GenericAPIView):
-    serializer_class = TaskSerializer, UserTaskSerializer
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    def get(self, request):
-        tasks_all = []
-        tasks = Task.objects.all()
-
-        for task in tasks:
-            temp_task = TaskSerializer(task).data
-            temp_task.update({'created by': UserTaskSerializer(User.objects.filter(pk=task.user_assigned.id).first())})
-            tasks_all.append(temp_task)
-
-        return JsonResponse(tasks_all, safe=False)
-
-
 class UpdateTask(GenericAPIView):
     serializer_class = TaskUpdateAllSerializer
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+
+    permission_classes = (IsAuthenticated,)
 
     def put(self, request):
         serializer = TaskUpdateAllSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
-            task = Task.objects.get(id=data['id'])
-            task.user_created = data["user_created"]
-            task.user_assigned = data["user_assigned"]
-            task.title = data["title"]
-            task.description = data["description"]
-            task.status = data["status"]
-            task.save()
+            if request.user == data["user_created"] or request.user == data["user_assigned"]:
+                task = Task.objects.get(id=data['id'])
+                task.user_created = data["user_created"]
+                task.user_assigned = data["user_assigned"]
+                task.title = data["title"]
+                task.description = data["description"]
+                task.status = data["status"]
+                task.save()
 
-            AddNotificationTaskStatus(task.user_assigned, task, data["status"])
+                if task.user_assigned and task.user_assigned != request.user:
+                    AddNotificationTaskStatus(task.user_assigned, task, data["status"])
 
-            response_data = TaskSerializer(task).data
-            return Response(response_data)
+                response_data = TaskSerializer(task).data
+                return Response(response_data)
+            else:
+                return Response(serializer.errors, status=403)
         else:
             return Response(serializer.errors, status=400)
 
