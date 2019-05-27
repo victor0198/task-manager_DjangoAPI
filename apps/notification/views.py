@@ -10,7 +10,7 @@ def AddNotificationComment(user, comment, task):
         user=user,
         task=task,
         comment=comment,
-        seen=False,
+        seen=True,
         status=None
     )
 
@@ -21,7 +21,7 @@ def AddNotificationTaskStatus(user, task, status):
     notification = Notification.objects.create(
         user=user,
         task=task,
-        seen=False,
+        seen=True,
         status=status
     )
 
