@@ -2,7 +2,7 @@
 venv/
 *.pyc
 media/*
-*/development.py
+./development.py
 */production.py
 */testing.py
 db.sqlite3
