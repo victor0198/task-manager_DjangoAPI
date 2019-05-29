@@ -34,6 +34,10 @@ RUN find /var/log -type f | while read f; do echo -ne '' > $f; done;
 COPY . /usr/app
 RUN pip install --no-cache-dir -r requirements.txt
 
+# creating database
+RUN python manage.py makemigrations
+RUN python manage.py migrate
+
 # Exposing Ports
 EXPOSE 8000
 
