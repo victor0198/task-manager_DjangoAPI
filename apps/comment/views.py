@@ -50,7 +50,6 @@ class AddCommentView(GenericAPIView):
         users = User.objects.filter(pk__in=people)
 
         for user in users:
-            print("notification to " + str(user))
             AddNotificationComment(user, comment, task)
 
         return Response(CommentSerializer(comment).data)

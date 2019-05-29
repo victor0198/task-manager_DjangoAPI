@@ -18,7 +18,7 @@ class TaskTestCase(TestCase):
             "username": "string",
             "password": "string"
         })
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.user = User.objects.filter(username='string').first()
         self.assertIsNotNone(self.user)
 
@@ -28,17 +28,17 @@ class TaskTestCase(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
         self.assertIsNotNone(self.user)
-
+        response1 = self.client.post(reverse('task_create'), {
+            "title": "string",
+            "description": "string",
+            "user_assigned": 1,
+        })
         comment = self.client.post(reverse('comment_create'), {
-
             "task": 1,
             "text": "string",
-
         })
 
         print(comment.data)
-
-        # print(self.user)
         self.assertEqual(comment.status_code, 200)
 
     # test delete a task
@@ -51,10 +51,7 @@ class TaskTestCase(TestCase):
         response0 = self.client.post(reverse('task_create'), {
             "title": "string",
             "description": "string",
-            "status": "created",
             "user_assigned": 1,
-            "text": "string",
-            "task": 1,
         })
         response1 = self.client.post(reverse('comment_create'), {
             "task": 1,
