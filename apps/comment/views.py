@@ -63,9 +63,8 @@ class DeleteCommentView(GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def delete(self, request, pk):
-        comment = Comment.objects.filter(pk=pk)
-
-        if comment.count() == 0:
-            return Response(status=403)
+        comment = Comment.objects.filter(pk=pk, user=request.user.id).first()
+        if not comment:
+            return Response(status=404)
         comment.delete()
         return Response(status=HTTP_204_NO_CONTENT)
