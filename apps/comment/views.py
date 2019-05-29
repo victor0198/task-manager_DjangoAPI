@@ -31,11 +31,26 @@ class AddCommentView(GenericAPIView):
         task.save()
         comment.save()
 
-        if request.user != comment.task.user_assigned:
-            AddNotificationComment(comment.task.user_assigned, comment, task)
-        if request.user != comment.task.user_created:
-            AddNotificationComment(comment.task.user_created, comment, task)
         people = []
+
+        if comment.task.user_assigned and request.user != comment.task.user_assigned:
+            people.append(comment.task.user_assigned.id)
+        if request.user != comment.task.user_created:
+            people.append(comment.task.user_created.id)
+
+        comments = Comment.objects.filter(task=task)
+        for one_comment in comments:
+            if request.user != one_comment.user:
+                people.append(one_comment.user.id)
+
+        people = list(dict.fromkeys(people))
+
+        users = User.objects.filter(pk__in=people)
+
+        for user in users:
+            print("notification to " + str(user))
+            AddNotificationComment(user, comment, task)
+
 
         if request.user != comment.task.user_assigned:
             people.append(comment.task.user_assigned.id)
