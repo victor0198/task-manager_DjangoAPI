@@ -41,7 +41,7 @@ class TaskTestCase(TestCase):
         # print(self.user)
         self.assertEqual(comment.status_code, 200)
 
-        # delete a task
+    # test delete a task
 
     def test_comment_delete(self):
         print("--delete comment--start")
