@@ -40,3 +40,31 @@ class TaskTestCase(TestCase):
 
         # print(self.user)
         self.assertEqual(comment.status_code, 200)
+
+    # test delete a task
+
+    def test_comment_delete(self):
+        print("--delete comment--start")
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.assertIsNotNone(self.user)
+        response0 = self.client.post(reverse('task_create'), {
+            "title": "string",
+            "description": "string",
+            "status": "created",
+            "user_assigned": 1,
+            "text": "string",
+            "task": 1,
+        })
+        response1 = self.client.post(reverse('comment_create'), {
+            "task": 1,
+            "text": "string"
+        })
+        response2 = self.client.delete(reverse('delete_task', args=(1,)))
+        print(response0.status_code)
+        print(response1.status_code)
+        print(response2.status_code)
+
+        self.assertEqual(response2.status_code, 204)
+        print("--delete task--end")
+        print("")
