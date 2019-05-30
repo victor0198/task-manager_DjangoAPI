@@ -18,9 +18,8 @@ class Task(models.Model):
         (FINISHED, 'finished'),
     ]
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=CREATED)
-    date_create_task = models.DateTimeField(null=True, blank=True,  default=datetime.now())
+    date_create_task = models.DateTimeField(null=True, blank=True)
     update_task = models.DateTimeField(null=True, blank=True)
-    time_finish = models.DateTimeField(null=True,  blank=True)
 
     @staticmethod
     def is_finished(self):
@@ -29,3 +28,9 @@ class Task(models.Model):
     @staticmethod
     def get_status(self):
         return self.status
+
+
+class Time(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    time_finish = models.DateTimeField(null=True, blank=True)
+    duration_time = models.DurationField(null=True, blank=True)
