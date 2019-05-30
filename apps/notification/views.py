@@ -31,11 +31,30 @@ def AddNotificationTaskStatus(user, task, status):
 # task 15: View my notifications
 
 class MyNotificationView(GenericAPIView):
-
     serializer_class = NotificationSerializer
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        notific = Notification.objects.filter(user=request.user.id, seen=False).order_by("-id")
-        return Response(NotificationSerializer(notific, many=True).data)
+        url_parameters = str(request.META['QUERY_STRING'])
+        params = url_parameters.split('&')
+        notifications = None
 
+        for param in params:
+            if param:
+                key = param.split('=')[0]
+                if int(param.split('=')[1]) >= 0:
+                    valueStart = (int(param.split('=')[1])) * 10
+                    valueEnd = int(valueStart) + 10
+                    if key == 'page':
+                        notifications = Notification.objects.filter(user=request.user.id, seen=False).order_by("-id")[
+                                        int(valueStart):int(valueEnd)]
+
+                        # there are no notifications on this page
+                        if not notifications:
+                            return Response(status=204)
+                else:
+                    return Response(status=400)
+
+        if not notifications:
+            notifications = Notification.objects.filter(user=request.user.id, seen=False).order_by("-id")[:10]
+        return Response(NotificationSerializer(notifications, many=True).data)

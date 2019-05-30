@@ -29,7 +29,7 @@ class RegisterUserView(GenericAPIView):
         user.set_password(validated_data['password'])
         user.save()
 
-        return Response(UserSerializer(user).data)
+        return Response(UserSerializer(user).data, status=201)
 
 
 class UserSearchViewSet(viewsets.ModelViewSet):
