@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from apps.comment.models import Comment
-from apps.task.models import Task
+from apps.task.models import Task, Time
 from django.contrib.auth.models import User
 from apps.users.serializers import UserSerializer, UserTaskSerializer
 
@@ -114,6 +114,13 @@ class TaskSearchSerializer(serializers.ModelSerializer):
 
 class TaskUpdateStateSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
+    time_finish = serializers.DateTimeField() #new
+
+    def validate_time(self, obj): #new
+        time = Time.objects.filter(time_finish = obj) #new
+        if not time:
+            raise ValidationError("Not exists")
+        return obj #new
 
     def validate_id(self, value):
         task = Task.objects.filter(id=value).first()
@@ -123,4 +130,4 @@ class TaskUpdateStateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'status')
+        fields = ('id', 'status', 'time_finish') #add time

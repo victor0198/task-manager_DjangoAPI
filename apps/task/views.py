@@ -9,7 +9,7 @@ from apps.task.serializers import TaskUpdateAllSerializer, TaskSearchSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
-from apps.task.models import Task
+from apps.task.models import Task, Time
 from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, TaskUpdateStateSerializer
 from apps.notification.views import AddNotificationTaskStatus
 from django.contrib.auth.models import User
@@ -216,9 +216,15 @@ class UpdateTaskState(GenericAPIView):
     def put(self, request):
         validated_data = request.serializer.validated_data
         task = Task.objects.get(pk=validated_data["id"])
+        date_create_task = Task.objects.filter(date_create_task = "date_create_task").first #new
+        time = Time.objects.filter(time_finish = validated_data['time_finish'])#new
+        time.time_finish = datetime.now()#new
+        time.duration_time = date_create_task - time.time_finish #new
+
         if (task.user_assigned and request.user.id == task.user_assigned.id) or request.user.id == task.user_created.id:
             task.status = validated_data["status"]
             task.save()
+            time.save()#new
 
             if validated_data["status"] == "finished":
                 people = []
