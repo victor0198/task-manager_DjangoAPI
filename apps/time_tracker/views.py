@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from drf_util.decorators import serialize_decorator
 from rest_framework.generics import GenericAPIView
-from apps.time_tracker.serializers import TimeTrackerSerializer, TimeTrackerStartSerializer
+from apps.time_tracker.serializers import TimeTrackerSerializer, TimeTrackerStartSerializer, TimeTrackerLogsSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from apps.time_tracker.models import TimeTracker
@@ -31,3 +31,14 @@ class TimeTrackerStartView(GenericAPIView):
         time_tracker.save()
 
         return Response(status=201)
+
+
+# Get a list of time logs records by task ID
+
+class TimeLogsListView(GenericAPIView):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request, pk):
+        time_logs = TimeTracker.objects.filter(task=pk)
+        return Response(TimeTrackerLogsSerializer(time_logs, many=True).data)

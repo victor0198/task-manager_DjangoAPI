@@ -290,12 +290,3 @@ class TaskSearchViewSet(viewsets.ModelViewSet):
     search_fields = ('$title', '$description')
     http_method_names = ['get']
 
-
-# Add time log for a task on a specific date (send in endpoint task id, date, duration in minutes)
-
-# class TaskSpecificData(viewsets.ModelViewSet):
-#     permission_classes = (IsAuthenticated,)
-#     serializer_class = TaskSerializer
-#
-#     def post(self, request):
-#         task = w
