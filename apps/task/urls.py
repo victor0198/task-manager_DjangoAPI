@@ -30,7 +30,7 @@ urlpatterns += [
     path('<int:pk>/start/', TimeTrackerStartView.as_view(), name='start_time'),
     path('<int:pk>/add_log/', TimeTrackerAddLogView.as_view(), name='add_log'),
     path('<int:pk>/stop/', TimeTrackerStop.as_view(), name='tasks_all_details_stop_time'),
-    path('time_list_logs_view/<int:pk>/', TimeTrackerLogsView.as_view(), name='time_logs'),
+    path('<int:pk>/logs/', TimeTrackerLogsView.as_view(), name='time_logs'),
 
     path('<int:pk>/', TaskCommentsView.as_view(), name='tasks_all_details'),
     path('my_tasks/', UserTaskView.as_view(), name='all_task_user'),

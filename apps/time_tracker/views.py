@@ -32,9 +32,10 @@ class TimeTrackerStartView(GenericAPIView):
     def post(self, request, pk):
         task = Task.objects.get(id=pk)
 
-        last_interval = TimeTracker.objects.filter(task=task).last()
-        if not last_interval.finish_time:
-            return Response(status=403)
+        if TimeTracker.objects.filter(task=task).count() > 0:
+            last_interval = TimeTracker.objects.filter(task=task).last()
+            if not last_interval.finish_time:
+                return Response(status=403)
 
         if not task:
             return Response(status=404)
@@ -43,7 +44,7 @@ class TimeTrackerStartView(GenericAPIView):
 
         time_tracker = TimeTracker.objects.create(
             task=task,
-            start_time=datetime.now(),
+            start_time=datetime.datetime.now(),
         )
         time_tracker.save()
 
@@ -86,11 +87,21 @@ class TimeTrackerStop(GenericAPIView):
 
     def put(self, request, pk):
         task = Task.objects.get(id=pk)
-        finish = datetime.now()
-        time_finish = TimeTracker.objects.filter(task=task).first()
+        finish = datetime.datetime.now()
+        time_finish = TimeTracker.objects.filter(task=task).last()
         if time_finish:
             time_finish.finish_time = finish
+            difference = time_finish.finish_time - time_finish.start_time
+            time_finish.duration = (difference.days * 24 * 60 + difference.seconds) / 60
             time_finish.save()
+
+        intervals = TimeTracker.objects.filter(task=task)
+        duration = 0
+        for interval in intervals:
+            if interval.duration:
+                duration += interval.duration
+        task.duration = duration
+        task.save()
 
         return Response(status=201)
 

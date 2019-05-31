@@ -147,12 +147,10 @@ class TasksAllSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_duration(obj):
         intervals = TimeTracker.objects.filter(task=obj.id)
-        print(intervals)
         duration = 0
         for interval in intervals:
             if interval.duration:
                 duration += interval.duration
-        print(duration)
         return duration
 
     class Meta:
