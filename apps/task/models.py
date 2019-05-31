@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from datetime import datetime
 
 
 class Task(models.Model):
@@ -27,3 +28,10 @@ class Task(models.Model):
     @staticmethod
     def get_status(self):
         return self.status
+
+
+class Time(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task_inprocess = models.DateTimeField(null=True, blank=True)
+    task_finish = models.DateTimeField(null=True, blank=True)
+    duration_time = models.DurationField(null=True, blank=True)

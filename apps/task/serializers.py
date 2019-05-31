@@ -114,6 +114,13 @@ class TaskSearchSerializer(serializers.ModelSerializer):
 
 class TaskUpdateStateSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
+    # time_finish = serializers.DateTimeField() #new
+
+    # def validate_time(self, obj): #new
+    #     time = Time.objects.filter(time_finish = obj) #new
+    #     if not time:
+    #         raise ValidationError("Not exists")
+    #     return obj #new
 
     def validate_id(self, value):
         task = Task.objects.filter(id=value).first()
@@ -123,4 +130,4 @@ class TaskUpdateStateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'status')
+        fields = ('id', 'status') #add time 'time_finish'
