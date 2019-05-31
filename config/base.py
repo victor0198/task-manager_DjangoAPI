@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'apps.common',
     'apps.users',
     'apps.task',
+    'apps.time_tracker',
     'apps.notification',
     'apps.comment',
 ]

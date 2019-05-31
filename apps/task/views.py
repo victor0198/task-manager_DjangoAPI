@@ -9,7 +9,7 @@ from apps.task.serializers import TaskUpdateAllSerializer, TaskSearchSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
-from apps.task.models import Task, Time
+from apps.task.models import Task
 from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, TaskUpdateStateSerializer
 from apps.notification.views import AddNotificationTaskStatus
 from django.contrib.auth.models import User
