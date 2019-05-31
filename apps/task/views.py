@@ -284,3 +284,4 @@ class TaskSearchViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('$title', '$description')
     http_method_names = ['get']
+

@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from apps.time_tracker.models import TimeTracker
 from apps.task.models import Task
-from datetime import datetime
 
 
 class TimeTrackerView(GenericAPIView):
@@ -30,20 +29,5 @@ class TimeTrackerStartView(GenericAPIView):
             task=task,
         )
         time_tracker.save()
-
-        return Response(status=201)
-
-
-class TimeTrackerStop(GenericAPIView):
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    def put(self, request, pk):
-        task = Task.objects.get(id=pk)
-        finish = datetime.now()
-        time_finish = TimeTracker.objects.filter(task = task).first()
-        if time_finish:
-            time_finish.finish_time = finish
-            time_finish.save()
 
         return Response(status=201)
