@@ -275,7 +275,7 @@ class TaskTestCase(TestCase):
         response1 = self.client.post(reverse('task_create'), {
             "title": "string",
             "description": "string",
-            "user_assigned": 1,
+            "user_assigned": 2,
         })
         if response1.status_code == 201:
             print("task added as user1")
