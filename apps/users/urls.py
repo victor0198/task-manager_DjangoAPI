@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from apps.users.views import UserSearchViewSet, RegisterUserView, MeDetails
+from apps.task.views import UserSpentTimeView
 
 router = DefaultRouter()
 router.register(r'search', UserSearchViewSet, base_name='all_users')
@@ -15,7 +16,9 @@ urlpatterns += [
     path('register/', RegisterUserView.as_view(), name='token_register'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('me/', MeDetails.as_view(), name='user_me')
+    path('me/', MeDetails.as_view(), name='user_me'),
+    path('time_spent/<int:pk>/', UserSpentTimeView.as_view(), name='user_me')
+
 ]
 
 for i in range(1, 4):

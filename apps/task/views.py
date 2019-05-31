@@ -10,7 +10,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
-from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, TaskUpdateStateSerializer
+from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, TaskUpdateStateSerializer, \
+    TasksAllSerializer, UserSpentTimeSerializer
 from apps.notification.views import AddNotificationTaskStatus
 from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
@@ -29,7 +30,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    serializer_class = TaskSerializer
+    serializer_class = TasksAllSerializer
     queryset = Task.objects.order_by('-id')
 
     pagination_class = TenResultsSetPagination
@@ -40,7 +41,7 @@ class TaskFilterStatusCreatedViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    serializer_class = TaskSerializer
+    serializer_class = TasksAllSerializer
     queryset = Task.objects.filter(status=Task.CREATED).order_by('-id')
 
     pagination_class = TenResultsSetPagination
@@ -51,7 +52,7 @@ class TaskFilterStatusInprocessViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    serializer_class = TaskSerializer
+    serializer_class = TasksAllSerializer
     queryset = Task.objects.filter(status=Task.INPROCESS).order_by('-id')
 
     pagination_class = TenResultsSetPagination
@@ -62,7 +63,7 @@ class TaskFilterStatusFinishedViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    serializer_class = TaskSerializer
+    serializer_class = TasksAllSerializer
     queryset = Task.objects.filter(status=Task.FINISHED).order_by('-id')
 
     pagination_class = TenResultsSetPagination
@@ -284,4 +285,14 @@ class TaskSearchViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('$title', '$description')
     http_method_names = ['get']
+
+class UserSpentTimeView(GenericAPIView):
+    serializer_class = UserSpentTimeSerializer
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request, pk):
+        user = User.objects.get(pk=pk)
+        return Response(UserSpentTimeSerializer(user).data)
 
