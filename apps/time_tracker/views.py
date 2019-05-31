@@ -87,6 +87,12 @@ class TimeTrackerStop(GenericAPIView):
 
     def put(self, request, pk):
         task = Task.objects.get(id=pk)
+
+        if not task:
+            return Response(status=404)
+        elif task.user_assigned != request.user:
+            return Response(status=403)
+
         finish = datetime.datetime.now()
         time_finish = TimeTracker.objects.filter(task=task).last()
         if time_finish:

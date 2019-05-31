@@ -20,6 +20,7 @@ from apps.notification.models import Notification
 from apps.comment.models import Comment
 import base64
 import json
+from apps.time_tracker.models import TimeTracker
 
 
 class TenResultsSetPagination(PageNumberPagination):
@@ -153,10 +154,6 @@ class TaskCommentsView(GenericAPIView):
         for comment in response_data.items():
             if isinstance(comment[1], list):
                 if len(comment[1]) > 1:
-                    a_comment = dict(comment[1][0])
-                    id_comment = a_comment.get('id')
-                    comment_object = Comment.objects.get(id=id_comment)
-                    id_task = comment_object.task
 
                     if user_identification:
                         notifics = Notification.objects.filter(task=task.id, user=user_identification)
@@ -170,6 +167,12 @@ class TaskCommentsView(GenericAPIView):
                 for a_notification in notifics:
                     a_notification.seen = True
                     a_notification.save()
+
+        start_time = None
+        last_interval = TimeTracker.objects.last()
+        if not last_interval.finish_time:
+            start_time = last_interval.start_time
+        response_data.update({"start_counter_from": start_time})
 
         return Response(response_data)
 
