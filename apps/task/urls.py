@@ -5,8 +5,7 @@ from apps.task.views import CompletedTaskListView, DeleteView, AddTaskView, AddT
     TaskSearchViewSet
 from rest_framework.routers import DefaultRouter
 
-from apps.time_tracker.views import TimeTrackerView, TimeTrackerStop
-from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerAddLogView
+from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerAddLogView, TimeTrackerStop
 
 
 router = DefaultRouter()
@@ -26,8 +25,6 @@ urlpatterns += [
     path('create_self/', AddTaskSelfView.as_view(), name='task_create_self'),
     path('task_update/', UpdateTask.as_view(), name="update_task"),
 
-
-    path('<int:pk>/time_logs/', TimeTrackerView.as_view(), name='tasks_all_details'),
     path('<int:pk>/start/', TimeTrackerStartView.as_view(), name='start_time'),
     path('<int:pk>/add_log/', TimeTrackerAddLogView.as_view(), name='add_log'),
     path('<int:pk>/stop/', TimeTrackerStop.as_view(), name='tasks_all_details_stop_time'),
