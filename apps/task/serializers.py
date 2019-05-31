@@ -5,6 +5,7 @@ from apps.comment.models import Comment
 from apps.task.models import Task
 from django.contrib.auth.models import User
 from apps.users.serializers import UserSerializer, UserTaskSerializer
+from apps.time_tracker.models import TimeTracker
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -114,6 +115,7 @@ class TaskSearchSerializer(serializers.ModelSerializer):
 
 class TaskUpdateStateSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
+
     # time_finish = serializers.DateTimeField() #new
 
     # def validate_time(self, obj): #new
@@ -130,4 +132,52 @@ class TaskUpdateStateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'status') #add time 'time_finish'
+        fields = ('id', 'status')  # add time 'time_finish'
+
+
+class TasksAllSerializer(serializers.ModelSerializer):
+    user_assigned = serializers.SerializerMethodField()
+    user_created = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
+    duration = serializers.SerializerMethodField()
+
+    def get_user_created(self, obj):
+        return {"username": obj.user_created.username, "id": obj.user_created.id}
+
+    def get_user_assigned(self, obj):
+        return {"username": obj.user_created.username, "id": obj.user_created.id}
+
+    @staticmethod
+    def get_comments(obj):
+        comments = Comment.objects.filter(task=obj.id).count()
+        return {"count_comment": comments}
+
+    @staticmethod
+    def get_duration(obj):
+        intervals = TimeTracker.objects.filter(task=obj.id)
+        print(intervals)
+        duration = 0
+        for interval in intervals:
+            if interval.duration:
+                duration += interval.duration
+        print(duration)
+        return duration
+
+    class Meta:
+        model = Task
+        fields = '__all__'
+
+
+class UserSpentTimeSerializer(serializers.ModelSerializer):
+    duration = serializers.SerializerMethodField()
+
+    def get_duration(self, obj):
+        minutes = 0
+        for task in Task.objects.filter(user_assigned=obj.id):
+            minutes += task.spent_time
+        print(minutes)
+        return minutes
+
+    class Meta:
+        model = User
+        fields = ('duration', )

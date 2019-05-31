@@ -5,10 +5,11 @@ from rest_framework import serializers
 class TimeTrackerSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeTracker
-        fields = ('task', 'start_time', 'finish_time', 'duration')
+        fields = '__all__'
 
-class TimeTrackerStartSerializer(serializers.ModelSerializer):
+
+class TimeTrackerAddLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeTracker
-        fields = ('task', 'start_time', 'finish_time', 'duration')
+        fields = ('start_time', 'duration')
 
