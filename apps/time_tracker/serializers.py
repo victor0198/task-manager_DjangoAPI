@@ -19,3 +19,6 @@ class TimeTrackerLogsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeTracker
         fields = ('start_time', 'finish_time', 'duration')
+
+
+

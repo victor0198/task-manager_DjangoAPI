@@ -3,6 +3,8 @@ from datetime import datetime
 from django.shortcuts import render
 from drf_util.decorators import serialize_decorator
 from rest_framework.generics import GenericAPIView
+
+from apps.task.serializers import TaskSerializer
 from apps.time_tracker.serializers import TimeTrackerSerializer, TimeTrackerLogsSerializer
 from apps.time_tracker.serializers import TimeTrackerSerializer, TimeTrackerAddLogSerializer
 from rest_framework.response import Response
@@ -99,3 +101,31 @@ class TimeTrackerLogsView(GenericAPIView):
     def get(self, request, pk):
         time_logs = TimeTracker.objects.filter(task=pk)
         return Response(TimeTrackerLogsSerializer(time_logs, many=True).data)
+
+
+class TopDurationTimeView(GenericAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request):
+        now = datetime.datetime.now()
+        last_month = now - datetime.timedelta(days=31)
+        print(last_month)
+        # last_month = now.month-1 if now.month > 1 else 12
+        a = dict()
+        data = Task.objects.filter(date_create_task__month=5)
+        for task in data:
+            if task.date_create_task > last_month:
+                a.update({task.id: task.duration})
+                result = sorted(a.items(), key=lambda kv: kv[1], reverse=True)
+
+        tasksList = list()
+        for task in result:
+            tasksList.append(Task.objects.filter(id=task[0])[0])
+
+        resoult = (TaskSerializer(tasksList, many=True).data)
+        return Response(resoult)
+
+
+

@@ -4,7 +4,7 @@ from apps.task.views import CompletedTaskListView, DeleteView, AddTaskView, AddT
     TaskFilterStatusCreatedViewSet, TaskFilterStatusInprocessViewSet, TaskFilterStatusFinishedViewSet, \
     TaskSearchViewSet
 from rest_framework.routers import DefaultRouter
-from apps.time_tracker.views import  TimeTrackerStartView, TimeTrackerStop, TimeTrackerLogsView
+from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerStop, TimeTrackerLogsView, TopDurationTimeView
 
 from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerAddLogView, TimeTrackerStop
 
@@ -31,11 +31,11 @@ urlpatterns += [
     path('<int:pk>/add_log/', TimeTrackerAddLogView.as_view(), name='add_log'),
     path('<int:pk>/stop/', TimeTrackerStop.as_view(), name='tasks_all_details_stop_time'),
     path('time_list_logs_view/<int:pk>/', TimeTrackerLogsView.as_view(), name='time_logs'),
+    path('list_top_duration/', TopDurationTimeView.as_view(), name="top_20"),
 
     path('<int:pk>/', TaskCommentsView.as_view(), name='tasks_all_details'),
     path('my_tasks/', UserTaskView.as_view(), name='all_task_user'),
     path('update_status/', UpdateTaskState.as_view(), name="update_status"),
-
 ]
 
 for i in range(1, 4):
