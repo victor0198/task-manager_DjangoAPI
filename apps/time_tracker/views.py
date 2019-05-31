@@ -82,8 +82,7 @@ class TimeTrackerAddLogView(GenericAPIView):
 
 # Time Stop! Task2
 class TimeTrackerStop(GenericAPIView):
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+    permission_classes = (IsAuthenticated,)
 
     def put(self, request, pk):
         task = Task.objects.get(id=pk)
