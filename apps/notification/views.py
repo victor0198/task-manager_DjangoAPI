@@ -57,4 +57,11 @@ class MyNotificationView(GenericAPIView):
 
         if not notifications:
             notifications = Notification.objects.filter(user=request.user.id, seen=False).order_by("-id")[:10]
-        return Response(NotificationSerializer(notifications, many=True).data)
+
+        response = dict({"notifications": NotificationSerializer(notifications, many=True, context={'user_id': request.user.id}).data.copy()})
+        total_notifications = Notification.objects.filter(user=request.user.id, seen=False).count()
+        response.update({"count": total_notifications})
+
+
+
+        return Response(response)

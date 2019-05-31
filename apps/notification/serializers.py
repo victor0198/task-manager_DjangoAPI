@@ -9,14 +9,12 @@ from apps.task.models import Task
 class CommentTaskSerializer(serializers.ModelSerializer):
     task = serializers.SerializerMethodField()
 
-
     def get_task(self, obj):
-        if obj.task.status=="created":
+        if obj.task.status == "created":
 
             return {'title': obj.task.title, 'id': obj.task.id}
         else:
             return {}
-
 
     class Meta:
         model = Comment
@@ -29,7 +27,6 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_comment(obj):
-        noti = Notification.objects.get(id=obj.id)
         comment = Comment.objects.filter(task=obj.task.id).first()
         return CommentTaskSerializer(comment).data
 

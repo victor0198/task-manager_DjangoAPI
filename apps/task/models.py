@@ -30,8 +30,3 @@ class Task(models.Model):
         return self.status
 
 
-class Time(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    task_inprocess = models.DateTimeField(null=True, blank=True)
-    task_finish = models.DateTimeField(null=True, blank=True)
-    duration_time = models.DurationField(null=True, blank=True)
