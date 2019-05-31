@@ -20,7 +20,8 @@ class Task(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=CREATED)
     date_create_task = models.DateTimeField(null=True, blank=True)
     update_task = models.DateTimeField(null=True, blank=True)
-    duration = models.IntegerField (default=0)
+    duration = models.IntegerField(default=0)
+
     @staticmethod
     def is_finished(self):
         return self.status == Task.FINISHED
