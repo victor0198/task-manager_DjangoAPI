@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from datetime import datetime
 
 
 class Task(models.Model):
@@ -19,7 +20,7 @@ class Task(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=CREATED)
     date_create_task = models.DateTimeField(null=True, blank=True)
     update_task = models.DateTimeField(null=True, blank=True)
-
+    duration = models.IntegerField (default=0)
     @staticmethod
     def is_finished(self):
         return self.status == Task.FINISHED
@@ -27,3 +28,5 @@ class Task(models.Model):
     @staticmethod
     def get_status(self):
         return self.status
+
+

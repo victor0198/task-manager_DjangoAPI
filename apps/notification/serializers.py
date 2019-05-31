@@ -26,7 +26,6 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_comment(obj):
-        noti = Notification.objects.get(id=obj.id)
         comment = Comment.objects.filter(task=obj.task.id).first()
         return CommentTaskSerializer(comment).data
 

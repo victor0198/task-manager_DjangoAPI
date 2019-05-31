@@ -115,6 +115,7 @@ class TaskSearchSerializer(serializers.ModelSerializer):
 class TaskUpdateStateSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
 
+
     def validate_id(self, value):
         task = Task.objects.filter(id=value).first()
         if not task:

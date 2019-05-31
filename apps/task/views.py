@@ -216,6 +216,7 @@ class UpdateTaskState(GenericAPIView):
     def put(self, request):
         validated_data = request.serializer.validated_data
         task = Task.objects.get(pk=validated_data["id"])
+
         if (task.user_assigned and request.user.id == task.user_assigned.id) or request.user.id == task.user_created.id:
             task.status = validated_data["status"]
             task.save()
@@ -283,3 +284,4 @@ class TaskSearchViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('$title', '$description')
     http_method_names = ['get']
+

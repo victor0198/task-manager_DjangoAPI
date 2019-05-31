@@ -22,7 +22,7 @@ class TaskTestCase(TestCase):
             "username": "test_username_1",
             "password": "test_password_1"
         })
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
 
         response = self.client.post(reverse('token_register'), {
             "first_name": "test_first_name_2",
@@ -30,7 +30,7 @@ class TaskTestCase(TestCase):
             "username": "test_username_2",
             "password": "test_password_2"
         })
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
 
         self.user = User.objects.filter(username='test_username_1').first()
         self.assertIsNotNone(self.user)
@@ -45,10 +45,7 @@ class TaskTestCase(TestCase):
         response = self.client.post(reverse('task_create'), {
             "title": "string",
             "description": "string",
-            "status": "created",
             "user_assigned": 1,
-            "text": "string",
-            "task": 1,
         })
         print(response.status_code)
         self.assertEqual(response.status_code, 201)
@@ -80,10 +77,7 @@ class TaskTestCase(TestCase):
         response1 = self.client.post(reverse('task_create'), {
             "title": "string",
             "description": "string",
-            "status": "created",
             "user_assigned": 1,
-            "text": "string",
-            "task": 1,
         })
         response2 = self.client.get(reverse('all_task_user'))
         print(response1.status_code)
@@ -101,10 +95,7 @@ class TaskTestCase(TestCase):
         response1 = self.client.post(reverse('task_create'), {
             "title": "string",
             "description": "string",
-            "status": "created",
             "user_assigned": 1,
-            "text": "string",
-            "task": 1,
         })
         response2 = self.client.put(reverse('update_task'), {
             "id": 1,
@@ -131,10 +122,7 @@ class TaskTestCase(TestCase):
         response1 = self.client.post(reverse('task_create'), {
             "title": "string",
             "description": "string",
-            "status": "created",
             "user_assigned": 1,
-            "text": "string",
-            "task": 1,
         })
         response2 = self.client.put(reverse('update_status'), {
             "id": 1,
@@ -157,10 +145,7 @@ class TaskTestCase(TestCase):
         response1 = self.client.post(reverse('task_create'), {
             "title": "string",
             "description": "string",
-            "status": "created",
             "user_assigned": 1,
-            "text": "string",
-            "task": 1,
         })
         response2 = self.client.put(reverse('update_task'), {
             "id": 1,
@@ -186,10 +171,7 @@ class TaskTestCase(TestCase):
         response1 = self.client.post(reverse('task_create'), {
             "title": "string",
             "description": "string",
-            "status": "created",
             "user_assigned": 1,
-            "text": "string",
-            "task": 1,
         })
         response2 = self.client.put(reverse('update_task'), {
             "id": 1,
@@ -222,10 +204,7 @@ class TaskTestCase(TestCase):
         response1 = self.client.post(reverse('task_create'), {
             "title": "string",
             "description": "string",
-            "status": "created",
             "user_assigned": 1,
-            "text": "string",
-            "task": 1,
         })
         response2 = self.client.delete(reverse('delete_task', args=(1,)))
         print(response1.status_code)
@@ -244,10 +223,7 @@ class TaskTestCase(TestCase):
         response1 = self.client.post(reverse('task_create'), {
             "title": "string",
             "description": "string",
-            "status": "created",
             "user_assigned": 1,
-            "text": "string",
-            "task": 1,
         })
         response2 = self.client.delete(reverse('delete_task', args=(2,)))
         print(response1.status_code)
@@ -264,12 +240,9 @@ class TaskTestCase(TestCase):
         self.client.force_authenticate(user=self.user)
         self.assertIsNotNone(self.user)
         response1 = self.client.post(reverse('task_create'), {
-            "title": "test_title",
-            "description": "test_description",
-            "status": "created",
+            "title": "string",
+            "description": "string",
             "user_assigned": 1,
-            "text": "test_text",
-            "task": 1,
         })
         print(response1.status_code)
         response2 = self.client.post(reverse('comment_create'), {
@@ -302,10 +275,7 @@ class TaskTestCase(TestCase):
         response1 = self.client.post(reverse('task_create'), {
             "title": "string",
             "description": "string",
-            "status": "created",
             "user_assigned": 2,
-            "text": "string",
-            "task": 1,
         })
         if response1.status_code == 201:
             print("task added as user1")
