@@ -5,7 +5,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets
-from apps.users.serializers import UserSearchSerializer, UserSerializer, UserMeSerializer
+from apps.users.serializers import UserSearchSerializer, UserSerializer, UserMeSerializer, UserSpentTimeSerializer
 from rest_framework import filters
 
 
@@ -54,3 +54,13 @@ class MeDetails(GenericAPIView):
 
         return Response(UserMeSerializer(user).data)
 
+
+class UserSpentTimeView(GenericAPIView):
+    serializer_class = UserSpentTimeSerializer
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request, pk):
+        user = User.objects.get(pk=pk)
+        return Response(UserSpentTimeSerializer(user).data)

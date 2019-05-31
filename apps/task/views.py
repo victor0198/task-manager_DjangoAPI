@@ -11,7 +11,7 @@ from rest_framework.status import HTTP_204_NO_CONTENT
 from apps.task.serializers import TaskSelfSerializer
 from apps.task.models import Task
 from apps.task.serializers import DetailTaskSerializer, TaskSerializer, TaskSerializerCreate, TaskUpdateStateSerializer, \
-    TasksAllSerializer, UserSpentTimeSerializer
+    TasksAllSerializer
 from apps.notification.views import AddNotificationTaskStatus
 from django.contrib.auth.models import User
 from rest_framework.pagination import PageNumberPagination
@@ -286,13 +286,4 @@ class TaskSearchViewSet(viewsets.ModelViewSet):
     search_fields = ('$title', '$description')
     http_method_names = ['get']
 
-class UserSpentTimeView(GenericAPIView):
-    serializer_class = UserSpentTimeSerializer
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    def get(self, request, pk):
-        user = User.objects.get(pk=pk)
-        return Response(UserSpentTimeSerializer(user).data)
 
