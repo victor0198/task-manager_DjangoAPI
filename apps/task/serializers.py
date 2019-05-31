@@ -159,17 +159,3 @@ class TasksAllSerializer(serializers.ModelSerializer):
         model = Task
         fields = '__all__'
 
-
-class UserSpentTimeSerializer(serializers.ModelSerializer):
-    duration = serializers.SerializerMethodField()
-
-    def get_duration(self, obj):
-        minutes = 0
-        for task in Task.objects.filter(user_assigned=obj.id):
-            minutes += task.duration
-        print(minutes)
-        return minutes
-
-    class Meta:
-        model = User
-        fields = ('duration', )

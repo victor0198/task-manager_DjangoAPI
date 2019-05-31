@@ -4,8 +4,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from apps.users.views import UserSearchViewSet, RegisterUserView, MeDetails
-from apps.task.views import UserSpentTimeView
+from apps.users.views import UserSearchViewSet, RegisterUserView, MeDetails, UserSpentTimeView
 
 router = DefaultRouter()
 router.register(r'search', UserSearchViewSet, base_name='all_users')

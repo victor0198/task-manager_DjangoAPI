@@ -32,6 +32,10 @@ class TimeTrackerStartView(GenericAPIView):
     def post(self, request, pk):
         task = Task.objects.get(id=pk)
 
+        last_interval = TimeTracker.objects.filter(task=task).last()
+        if not last_interval.finish_time:
+            return Response(status=403)
+
         if not task:
             return Response(status=404)
         elif task.user_assigned != request.user:
