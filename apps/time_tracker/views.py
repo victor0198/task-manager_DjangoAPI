@@ -47,6 +47,3 @@ class TimeTrackerStop(GenericAPIView):
             time_finish.save()
 
         return Response(status=201)
-
-
-
