@@ -179,6 +179,13 @@ class TaskCommentsView(GenericAPIView):
             start_time = last_interval.start_time
         response_data.update({"start_counter_from": start_time})
 
+        intervals_duration = TimeTracker.objects.filter(task=task)
+        duration = 0
+        for interval_duration in intervals_duration:
+            if interval_duration.duration:
+                duration += interval_duration.duration
+        response_data.update({"duration": duration})
+
         return Response(response_data)
 
 

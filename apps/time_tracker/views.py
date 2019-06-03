@@ -84,6 +84,14 @@ class TimeTrackerAddLogView(GenericAPIView):
         )
         time_tracker.save()
 
+        intervals = TimeTracker.objects.filter(task=task)
+        duration = 0
+        for interval in intervals:
+            if interval.duration:
+                duration += interval.duration
+        task.duration = duration
+        task.save()
+
         return Response(status=201)
 
 
@@ -109,9 +117,6 @@ class TimeTrackerStop(GenericAPIView):
                 interval.duration = (difference.days * 24 * 60 + difference.seconds) / 60
                 interval.save()
                 break
-
-
-
 
 
         intervals = TimeTracker.objects.filter(task=task)
@@ -170,7 +175,7 @@ class LoggedTimeView(GenericAPIView):
         now = datetime.datetime.now()
         last_month = now - datetime.timedelta(days=31)
         last_month_tasks = dict()
-        data = TimeTracker.objects.filter(date_create_task__month=last_month.month, user_assigned=pk)
+        data = Task.objects.filter(date_create_task__month=last_month.month, user_assigned=pk)
         for task in data:
             last_month_tasks.update({task.id: task.duration})
             print(task)
