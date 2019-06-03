@@ -23,7 +23,6 @@ class CommentTaskSerializer(serializers.ModelSerializer):
 
 class NotificationSerializer(serializers.ModelSerializer):
     comment = serializers.SerializerMethodField()
-    task = serializers.SerializerMethodField()
 
     @staticmethod
     def get_comment(obj):
