@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.shortcuts import render
 from drf_util.decorators import serialize_decorator
+from django.contrib.auth.models import User
 from rest_framework.generics import GenericAPIView
 
 from apps.task.serializers import TaskSerializer
@@ -60,6 +61,11 @@ class TimeTrackerAddLogView(GenericAPIView):
 
     @serialize_decorator(TimeTrackerAddLogSerializer)
     def post(self, request, pk):
+        validated_data = request.serializer.validated_data
+
+        if validated_data['duration'] < 1 or validated_data['duration'] > 1440:
+            return Response(status=403)
+
         task = Task.objects.get(id=pk)
 
         if not task:
@@ -67,7 +73,6 @@ class TimeTrackerAddLogView(GenericAPIView):
         elif task.user_assigned != request.user:
             return Response(status=403)
 
-        validated_data = request.serializer.validated_data
         finish_datetime = datetime.datetime.strptime(str(validated_data['start_time']), '%Y-%m-%d %H:%M:%S.%f')
         finish_datetime = finish_datetime + datetime.timedelta(minutes=validated_data['duration'])
 
@@ -95,12 +100,19 @@ class TimeTrackerStop(GenericAPIView):
             return Response(status=403)
 
         finish = datetime.datetime.now()
-        time_finish = TimeTracker.objects.filter(task=task).last()
-        if time_finish:
-            time_finish.finish_time = finish
-            difference = time_finish.finish_time - time_finish.start_time
-            time_finish.duration = (difference.days * 24 * 60 + difference.seconds) / 60
-            time_finish.save()
+        time_finish = TimeTracker.objects.filter(task=task).order_by('-id')
+
+        for interval in time_finish:
+            if not interval.finish_time:
+                interval.finish_time = finish
+                difference = interval.finish_time - interval.start_time
+                interval.duration = (difference.days * 24 * 60 + difference.seconds) / 60
+                interval.save()
+                break
+
+
+
+
 
         intervals = TimeTracker.objects.filter(task=task)
         duration = 0
@@ -135,8 +147,7 @@ class TopDurationTimeView(GenericAPIView):
         data = Task.objects.filter(date_create_task__month=last_month.month)
 
         for task in data:
-            if task.date_create_task > last_month:
-                last_month_tasks.update({task.id: task.duration})
+            last_month_tasks.update({task.id: task.duration})
 
         tasks_sorted = None
         tasks_sorted = sorted(last_month_tasks.items(), key=lambda kv: kv[1], reverse=True)
@@ -159,22 +170,23 @@ class LoggedTimeView(GenericAPIView):
         now = datetime.datetime.now()
         last_month = now - datetime.timedelta(days=31)
         last_month_tasks = dict()
-        data = Task.objects.filter(date_create_task__month=last_month.month, user_assigned=pk)
-
+        data = TimeTracker.objects.filter(date_create_task__month=last_month.month, user_assigned=pk)
         for task in data:
-            if task.date_create_task > last_month:
-                last_month_tasks.update({task.id: task.duration})
+            last_month_tasks.update({task.id: task.duration})
+            print(task)
+            print(task.id)
+            print(task.duration)
 
         minutes_logged = 0
         tasksList = list()
         for last_month_task in last_month_tasks.items():
+            print(last_month_task)
+            print(last_month_task[1])
             tasksList.append(Task.objects.filter(id=last_month_task[0])[0])
             minutes_logged += last_month_task[1]
 
-        print(tasksList)
         result = dict()
         result.update({"logged_minutes": minutes_logged})
-        print(result)
         return Response(result)
 
 

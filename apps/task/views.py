@@ -93,7 +93,7 @@ class AddTaskView(GenericAPIView):
 
         task.save()
 
-        if validated_data['user_assigned']:
+        if validated_data['user_assigned'] and validated_data['user_assigned'] != request.user:
             AddNotificationTaskStatus(task.user_assigned, task, "created")
 
         return Response(status=201)
@@ -168,8 +168,14 @@ class TaskCommentsView(GenericAPIView):
                     a_notification.save()
 
         start_time = None
-        last_interval = TimeTracker.objects.last()
-        if not last_interval.finish_time:
+        intervals = TimeTracker.objects.filter(task=task).order_by('-id')
+        last_interval = None
+        for interval in intervals:
+            if not interval.finish_time:
+                last_interval = interval
+                break
+
+        if last_interval and not last_interval.finish_time:
             start_time = last_interval.start_time
         response_data.update({"start_counter_from": start_time})
 
@@ -242,6 +248,14 @@ class UpdateTaskState(GenericAPIView):
 
                 for user in users:
                     AddNotificationTaskStatus(user, task, "finished")
+
+                # stop log for this task
+                time_finish = TimeTracker.objects.filter(task=task).last()
+                if time_finish:
+                    time_finish.finish_time = datetime.now()
+                    difference = time_finish.finish_time - time_finish.start_time
+                    time_finish.duration = (difference.days * 24 * 60 + difference.seconds) / 60
+                    time_finish.save()
         else:
             return Response(status=403)
 
