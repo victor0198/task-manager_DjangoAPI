@@ -131,21 +131,51 @@ class TopDurationTimeView(GenericAPIView):
     def get(self, request):
         now = datetime.datetime.now()
         last_month = now - datetime.timedelta(days=31)
-        print(last_month)
-        # last_month = now.month-1 if now.month > 1 else 12
-        a = dict()
-        data = Task.objects.filter(date_create_task__month=5)
+        last_month_tasks = dict()
+        data = Task.objects.filter(date_create_task__month=last_month.month)
+
         for task in data:
             if task.date_create_task > last_month:
-                a.update({task.id: task.duration})
-                result = sorted(a.items(), key=lambda kv: kv[1], reverse=True)
+                last_month_tasks.update({task.id: task.duration})
+
+        tasks_sorted = None
+        tasks_sorted = sorted(last_month_tasks.items(), key=lambda kv: kv[1], reverse=True)
 
         tasksList = list()
-        for task in result:
+        for task in tasks_sorted:
             tasksList.append(Task.objects.filter(id=task[0])[0])
 
-        resoult = (TaskSerializer(tasksList, many=True).data)
-        return Response(resoult)
+        tasksList = tasksList[:20]
+        result = (TaskSerializer(tasksList, many=True).data)
+        return Response(result)
+
+
+class LoggedTimeView(GenericAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request, pk):
+        now = datetime.datetime.now()
+        last_month = now - datetime.timedelta(days=31)
+        last_month_tasks = dict()
+        data = Task.objects.filter(date_create_task__month=last_month.month, user_assigned=pk)
+
+        for task in data:
+            if task.date_create_task > last_month:
+                last_month_tasks.update({task.id: task.duration})
+
+        minutes_logged = 0
+        tasksList = list()
+        for last_month_task in last_month_tasks.items():
+            tasksList.append(Task.objects.filter(id=last_month_task[0])[0])
+            minutes_logged += last_month_task[1]
+
+        print(tasksList)
+        result = dict()
+        result.update({"logged_minutes": minutes_logged})
+        print(result)
+        return Response(result)
 
 
 

@@ -139,7 +139,6 @@ class TaskCommentsView(GenericAPIView):
 
             if not token[1] == "undefined":
                 id_user_in_token = token[1].split(".")
-                # print(base64.b64decode(id_user_in_token[1]))
                 data = json.loads(base64.b64decode(id_user_in_token[1]))
                 user_identification = data["user_id"]
             else:
