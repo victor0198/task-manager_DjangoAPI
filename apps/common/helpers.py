@@ -1,5 +1,8 @@
 from collections import OrderedDict
+from idlelib import window
 
+from django.conf.urls import url
+from django.urls import include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
@@ -22,10 +25,13 @@ schema_view = get_schema_view(
         default_version='v1',
         description="Enjoy",
     ),
+    url='https://tasks.devebs.net/api/',
+    patterns=[url(r'^api/', include('config.urls')), ],
     validators=['ssv'],
     public=True,
     permission_classes=(AllowAny,)
 )
+
 
 
 def send_html_message(emails: List, title: str, template_path: str, context: Dict) -> None:

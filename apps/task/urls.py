@@ -9,16 +9,19 @@ from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerStop, TimeT
 from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerAddLogView, TimeTrackerStop, LoggedTimeView
 
 router = DefaultRouter()
-router.register(r'', TaskViewSet, base_name='all_tasks')
+# router.register(r'', TaskViewSet, base_name='all_tasks')
 router.register(r'created', TaskFilterStatusCreatedViewSet, base_name='task_list_status')
 router.register(r'open', TaskFilterStatusInprocessViewSet, base_name='task_list_status')
 router.register(r'closed', TaskFilterStatusFinishedViewSet, base_name='task_list_status')
 router.register(r'search', TaskSearchViewSet, base_name='all_tasks')
 urlpatterns = router.urls
 
+task_list = TaskViewSet.as_view({'get': 'list'})
+
 urlpatterns += [
     # path('list_task/<str:status>/', TaskFilterStatusView.as_view(), name='task_list'),
 
+    path('', task_list, name='all_tasks'),
     path('completed_task/', CompletedTaskListView.as_view(), name='completed_list'),
     path('delete_task/<int:pk>/', DeleteView.as_view(), name='delete_task'),
     path('create/', AddTaskView.as_view(), name='task_create'),
