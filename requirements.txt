@@ -13,8 +13,4 @@ coverage
 django-nose
 django-extensions
 djangorestframework_simplejwt
-mysqlclient
-mysql-connector
-
-
 
