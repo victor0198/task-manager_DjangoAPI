@@ -2,7 +2,6 @@ import logging
 
 from config.base import *
 
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ')%1nllc!l^6lnwjgmA7tfs9@%9axr_^=^h%krzs&keih+!j+#q'
 
@@ -50,7 +49,11 @@ LOGGING = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'task-db',
+        'USER': 'root',
+        'PASSWORD': 'root123',
+        'HOST': 'db',
+        'PORT': 3306,
     }
 }
