@@ -16,6 +16,8 @@ WORKDIR /usr/app
 
 # Installing python dependencies
 COPY requirements.txt /usr/app
+RUN apt-get update
+RUN apt-get install -y python3-tk
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install gunicorn
 
