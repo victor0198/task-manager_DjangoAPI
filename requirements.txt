@@ -14,8 +14,3 @@ django-nose
 django-extensions
 djangorestframework_simplejwt
 
-
-
-
-
-
