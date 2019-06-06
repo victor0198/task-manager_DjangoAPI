@@ -6,27 +6,12 @@ from django.contrib.auth.models import User
 from rest_framework.generics import GenericAPIView
 
 from apps.task.serializers import TaskSerializer
-from apps.time_tracker.serializers import TimeTrackerSerializer, TimeTrackerLogsSerializer
-from apps.time_tracker.serializers import TimeTrackerSerializer, TimeTrackerAddLogSerializer
+from apps.time_tracker.serializers import TimeTrackerLogsSerializer, TimeTrackerAddLogSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from apps.time_tracker.models import TimeTracker
 from apps.task.models import Task
 import datetime
-from django.utils.dateparse import parse_date
-
-
-# class TimeTrackerUserView(GenericAPIView):
-#     serializer_class = TimeTrackerSerializer
-#
-#     permission_classes = (AllowAny,)
-#     authentication_classes = ()
-#
-#     def get(self, request, pk):
-#         for task in Task.objects.filter(user_assigned=pk):
-#             time_tracker = TimeTracker.objects.filter(task=task.id)
-#
-#         return Response(TimeTrackerSerializer(time_tracker, many=True).data)
 
 
 class TimeTrackerStartView(GenericAPIView):
@@ -178,15 +163,10 @@ class LoggedTimeView(GenericAPIView):
         data = Task.objects.filter(date_create_task__month=last_month.month, user_assigned=pk)
         for task in data:
             last_month_tasks.update({task.id: task.duration})
-            print(task)
-            print(task.id)
-            print(task.duration)
 
         minutes_logged = 0
         tasksList = list()
         for last_month_task in last_month_tasks.items():
-            print(last_month_task)
-            print(last_month_task[1])
             tasksList.append(Task.objects.filter(id=last_month_task[0])[0])
             minutes_logged += last_month_task[1]
 

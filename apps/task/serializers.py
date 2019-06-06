@@ -4,7 +4,6 @@ from rest_framework.exceptions import ValidationError
 from apps.comment.models import Comment
 from apps.task.models import Task
 from django.contrib.auth.models import User
-from apps.users.serializers import UserSerializer, UserTaskSerializer
 from apps.time_tracker.models import TimeTracker
 
 

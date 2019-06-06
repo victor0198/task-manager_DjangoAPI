@@ -1,4 +1,3 @@
-from apps.task.models import Task
 from apps.time_tracker.models import TimeTracker
 from rest_framework import serializers
 

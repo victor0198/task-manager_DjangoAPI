@@ -1,11 +1,7 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
-from rest_framework.test import APIClient, APIRequestFactory
-
+from rest_framework.test import APIClient
 from django.test import TestCase
-
-from apps.comment.models import Comment
-from apps.notification.views import AddNotificationComment
 
 
 class TaskTestCase(TestCase):

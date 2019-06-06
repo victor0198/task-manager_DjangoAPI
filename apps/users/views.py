@@ -1,4 +1,3 @@
-# Create your views here.
 from django.contrib.auth.models import User
 from drf_util.decorators import serialize_decorator
 from rest_framework.generics import GenericAPIView
