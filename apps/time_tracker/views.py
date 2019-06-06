@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from apps.time_tracker.models import TimeTracker
 from apps.task.models import Task
 import datetime
-
+from apps.time_tracker.serializers import UserTimeSerializer
 
 class TimeTrackerStartView(GenericAPIView):
     permission_classes = (IsAuthenticated,)
@@ -126,53 +126,24 @@ class TimeTrackerLogsView(GenericAPIView):
 
 
 class TopDurationTimeView(GenericAPIView):
-    serializer_class = TaskSerializer
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
     def get(self, request):
         now = datetime.datetime.now()
         last_month = now - datetime.timedelta(days=31)
-        last_month_tasks = dict()
-        data = Task.objects.filter(date_create_task__month=last_month.month)
+        tasks = Task.objects.filter(date_create_task__year=last_month.year,
+                                    date_create_task__month=last_month.month).order_by('-duration')[:20]
 
-        for task in data:
-            last_month_tasks.update({task.id: task.duration})
-
-        tasks_sorted = None
-        tasks_sorted = sorted(last_month_tasks.items(), key=lambda kv: kv[1], reverse=True)
-
-        tasksList = list()
-        for task in tasks_sorted:
-            tasksList.append(Task.objects.filter(id=task[0])[0])
-
-        tasksList = tasksList[:20]
-        result = (TaskSerializer(tasksList, many=True).data)
-        return Response(result)
+        return Response(TaskSerializer(tasks, many=True).data)
 
 
 class LoggedTimeView(GenericAPIView):
-    serializer_class = TaskSerializer
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
     def get(self, request, pk):
-        now = datetime.datetime.now()
-        last_month = now - datetime.timedelta(days=31)
-        last_month_tasks = dict()
-        data = Task.objects.filter(date_create_task__month=last_month.month, user_assigned=pk)
-        for task in data:
-            last_month_tasks.update({task.id: task.duration})
-
-        minutes_logged = 0
-        tasksList = list()
-        for last_month_task in last_month_tasks.items():
-            tasksList.append(Task.objects.filter(id=last_month_task[0])[0])
-            minutes_logged += last_month_task[1]
-
-        result = dict()
-        result.update({"logged_minutes": minutes_logged})
-        return Response(result)
-
+        user = User.objects.filter(id=pk)
+        return Response(UserTimeSerializer(user).data)
 
 
