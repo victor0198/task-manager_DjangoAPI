@@ -2,11 +2,11 @@ from django.urls import path
 from apps.task.views import CompletedTaskListView, DeleteView, AddTaskView, AddTaskSelfView, UpdateTaskState, \
     TaskCommentsView, UserTaskView, UpdateTask, TaskViewSet, \
     TaskFilterStatusCreatedViewSet, TaskFilterStatusInprocessViewSet, TaskFilterStatusFinishedViewSet, \
-    TaskSearchViewSet
+    TaskSearchViewSet, UserTaskCreatedView
 from rest_framework.routers import DefaultRouter
 from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerStop, TimeTrackerLogsView, TopDurationTimeView
 
-from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerAddLogView, TimeTrackerStop, LoggedTimeView
+from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerAddLogView, TimeTrackerStop, LoggedTimeView, LogChartView
 
 router = DefaultRouter()
 router.register(r'', TaskViewSet, base_name='all_tasks')
@@ -30,10 +30,10 @@ urlpatterns += [
     path('<int:pk>/stop/', TimeTrackerStop.as_view(), name='tasks_all_details_stop_time'),
     path('<int:pk>/logs/', TimeTrackerLogsView.as_view(), name='time_logs'),
     path('top_duration/', TopDurationTimeView.as_view(), name="top_20"),
-    path('logged_time/<int:pk>/', LoggedTimeView.as_view(), name="top_20"),
 
     path('<int:pk>/', TaskCommentsView.as_view(), name='tasks_all_details'),
-    path('my_tasks/', UserTaskView.as_view(), name='all_task_user'),
+    path('my_created/', UserTaskView.as_view(), name='task_user_assigned'),
+    path('my_assigned/', UserTaskCreatedView.as_view(), name='task_user_created'),
     path('update_status/', UpdateTaskState.as_view(), name="update_status"),
 ]
 

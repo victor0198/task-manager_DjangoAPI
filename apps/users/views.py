@@ -56,12 +56,3 @@ class MeDetails(GenericAPIView):
         return Response(UserMeSerializer(user).data)
 
 
-class UserSpentTimeView(APIView):
-    serializer_class = UserSpentTimeSerializer
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    def get(self, request, pk):
-        user = User.objects.get(pk=pk)
-        return Response(UserSpentTimeSerializer(user).data)

@@ -196,7 +196,62 @@ class UserTaskView(GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        task = Task.objects.filter(user_assigned=request.user.id)
+        url_parameters = str(request.META['QUERY_STRING'])
+        params = url_parameters.split('&')
+        task = None
+
+        for param in params:
+            if param:
+                key = param.split('=')[0]
+                if int(param.split('=')[1]) >= 0:
+                    valueStart = (int(param.split('=')[1])) * 10
+                    valueEnd = int(valueStart) + 10
+                    if key == 'page':
+                        task = Task.objects.filter(user_assigned=request.user.id).order_by("-id")[
+                                        int(valueStart):int(valueEnd)]
+
+                        # there are no task on this page
+                        if not task:
+                            return Response(status=204)
+                else:
+                    return Response(status=400)
+
+        if not task:
+            task = Task.objects.filter(user_assigned=request.user.id).order_by("-id")[:10]
+
+        return Response(TaskSerializer(task, many=True).data)
+
+
+# task 5
+class UserTaskCreatedView(GenericAPIView):
+    serializer_class = TaskSerializer
+
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        url_parameters = str(request.META['QUERY_STRING'])
+        params = url_parameters.split('&')
+        task = None
+
+        for param in params:
+            if param:
+                key = param.split('=')[0]
+                if int(param.split('=')[1]) >= 0:
+                    valueStart = (int(param.split('=')[1])) * 10
+                    valueEnd = int(valueStart) + 10
+                    if key == 'page':
+                        task = Task.objects.filter(user_created=request.user.id).order_by("-id")[
+                                        int(valueStart):int(valueEnd)]
+
+                        # there are no task on this page
+                        if not task:
+                            return Response(status=204)
+                else:
+                    return Response(status=400)
+
+        if not task:
+            task = Task.objects.filter(user_created=request.user.id).order_by("-id")[:10]
+
         return Response(TaskSerializer(task, many=True).data)
 
 

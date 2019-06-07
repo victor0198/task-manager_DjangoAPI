@@ -1,9 +1,14 @@
 from datetime import datetime
 
+from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Sum
+from django.db.models.functions import ExtractMonth, TruncMonth, TruncDay
 from django.shortcuts import render
 from drf_util.decorators import serialize_decorator
 from django.contrib.auth.models import User
 from rest_framework.generics import GenericAPIView
+from rest_framework.utils import json
 
 from apps.task.serializers import TaskSerializer
 from apps.time_tracker.serializers import TimeTrackerLogsSerializer, TimeTrackerAddLogSerializer
@@ -13,6 +18,7 @@ from apps.time_tracker.models import TimeTracker
 from apps.task.models import Task
 import datetime
 from apps.time_tracker.serializers import UserTimeSerializer
+
 
 class TimeTrackerStartView(GenericAPIView):
     permission_classes = (IsAuthenticated,)
@@ -103,7 +109,6 @@ class TimeTrackerStop(GenericAPIView):
                 interval.save()
                 break
 
-
         intervals = TimeTracker.objects.filter(task=task)
         duration = 0
         for interval in intervals:
@@ -147,3 +152,12 @@ class LoggedTimeView(GenericAPIView):
         return Response(UserTimeSerializer(user).data)
 
 
+class LogChartView(GenericAPIView):
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request, pk):
+        tracker = TimeTracker.objects.filter(task__user_assigned=1).annotate(date=TruncDay('start_time')).values('date').annotate(
+            duration=Sum('duration')).values('date', 'duration').order_by('date')
+        data = list(tracker)
+        return Response(data)
