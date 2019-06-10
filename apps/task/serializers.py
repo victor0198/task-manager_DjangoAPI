@@ -16,7 +16,7 @@ class TaskSerializer(serializers.ModelSerializer):
         return {"username": obj.user_created.username, "id": obj.user_created.id}
 
     def get_user_assigned(self, obj):
-        return {"username": obj.user_created.username, "id": obj.user_created.id}
+        return {"username": obj.user_assigned.username, "id": obj.user_assigned.id}
 
     @staticmethod
     def get_comments(obj):

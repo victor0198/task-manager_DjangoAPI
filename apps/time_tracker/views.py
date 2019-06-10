@@ -17,7 +17,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from apps.time_tracker.models import TimeTracker
 from apps.task.models import Task
 import datetime
-from apps.time_tracker.serializers import UserTimeSerializer
+from apps.time_tracker.serializers import UserTimeSerializer, LogDateSerializeer
 
 
 class TimeTrackerStartView(GenericAPIView):
@@ -157,7 +157,40 @@ class LogChartView(GenericAPIView):
     authentication_classes = ()
 
     def get(self, request, pk):
-        tracker = TimeTracker.objects.filter(task__user_assigned=1).annotate(date=TruncDay('start_time')).values('date').annotate(
+        tracker = TimeTracker.objects.filter(task__user_assigned=pk).annotate(date=TruncDay('start_time')).values(
+            'date').annotate(
             duration=Sum('duration')).values('date', 'duration').order_by('date')
         data = list(tracker)
         return Response(data)
+
+
+class LogDate(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        url_parameters = str(request.META['QUERY_STRING'])
+        params = url_parameters.split('&')
+        tracker = None
+
+        for param in params:
+            if param and param.split('=')[1] and param.split('=')[0] == "date":
+                date_string = param.split('=')[1]
+                date = datetime.datetime.strptime(date_string, '%Y-%m-%d')
+
+                tracker = TimeTracker.objects.filter(task__user_assigned=request.user, start_time__year=date.year,
+                                                     start_time__month=date.month,
+                                                     start_time__day=date.day).order_by("-id")
+
+        return Response(LogDateSerializeer(tracker, many=True).data)
+
+
+class LogDelete(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def delete(self, request, pk):
+        tracker = TimeTracker.objects.filter(pk=pk, task__user_assigned=request.user.id)
+
+        if tracker.count() == 0:
+            return Response(status=403)
+        tracker.delete()
+        return Response(status=204)
