@@ -25,6 +25,8 @@ schema_view = get_schema_view(
         default_version='v1',
         description="Enjoy",
     ),
+    url='https://tasks.devebs.net/api/',
+    patterns=[url(r'^api/', include('config.urls')), ],
     validators=['ssv'],
     public=True,
     permission_classes=(AllowAny,)
