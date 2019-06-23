@@ -6,7 +6,7 @@ from apps.time_tracker.models import TimeTracker
 from rest_framework import serializers
 from apps.task.models import Task
 from django.contrib.auth.models import User
-from apps.task.serializers import TaskSerializer
+from apps.task.serializers import TaskSearchSerializer
 
 
 class TimeTrackerSerializer(serializers.ModelSerializer):
@@ -42,3 +42,12 @@ class UserTimeSerializer(serializers.ModelSerializer):
         fields = ('logged_minutes',)
 
 
+class LogDateSerializeer(serializers.ModelSerializer):
+    task = serializers.SerializerMethodField()
+
+    def get_task(self, obj):
+        return TaskSearchSerializer(obj.task).data
+
+    class Meta:
+        model = TimeTracker
+        fields = '__all__'
