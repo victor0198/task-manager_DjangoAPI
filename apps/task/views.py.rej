@@ -1,0 +1,26 @@
+diff a/apps/task/views.py b/apps/task/views.py	(rejected hunks)
+@@ -173,24 +173,6 @@
+                     a_notification.seen = True
+                     a_notification.save()
+ 
+-        start_time = None
+-        intervals = TimeTracker.objects.filter(task=task).order_by('-id')
+-        last_interval = None
+-        for interval in intervals:
+-            if not interval.finish_time:
+-                last_interval = interval
+-                break
+-
+-        if last_interval and not last_interval.finish_time:
+-            start_time = last_interval.start_time
+-        response_data.update({"start_counter_from": start_time})
+-
+-        intervals_duration = TimeTracker.objects.filter(task=task)
+-        duration = 0
+-        for interval_duration in intervals_duration:
+-            if interval_duration.duration:
+-                duration += interval_duration.duration
+-        response_data.update({"duration": duration})
+ 
+         return Response(response_data)
+ 

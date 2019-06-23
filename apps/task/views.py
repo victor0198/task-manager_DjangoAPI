@@ -21,10 +21,52 @@ from apps.comment.models import Comment
 import base64
 import json
 from apps.time_tracker.models import TimeTracker
+from rejson import Client, Path
 
 
 class TenResultsSetPagination(PageNumberPagination):
     page_size = 10
+
+
+class AllRedisTasksView(GenericAPIView):
+    serializer_class = TaskSerializer
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request):
+        rj = Client(host='localhost', port=6379, )
+
+        url_parameters = str(request.META['QUERY_STRING'])
+        params = url_parameters.split('&')
+        task = list()
+
+        for param in params:
+            if param:
+                if param and int(param.split('=')[1]) >= 0 and param.split('=')[0] == "page":
+                    valueStart = (int(param.split('=')[1])*10)
+                    valueEnd = int(valueStart) + 10
+                    tasksList = sorted(rj.execute_command('keys task:*'), reverse=True)
+
+                    for item in tasksList[valueStart:valueEnd]:
+                        current_task = getJSON(rj, item.decode('utf-8'), Path.rootPath())
+                        if current_task:
+                            task.append(current_task)
+
+                    if not task:
+                        return Response(status=204)
+                else:
+                    return Response(status=400)
+
+        if not task:
+            tasksList = sorted(rj.execute_command('keys task:*'), reverse=True)
+
+            for item in tasksList[0:10]:
+                current_task = getJSON(rj, item.decode('utf-8'), Path.rootPath())
+                if current_task:
+                    task.append(current_task)
+
+        return Response(task)
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -96,19 +138,45 @@ class AddTaskView(GenericAPIView):
         if validated_data['user_assigned'] and validated_data['user_assigned'] != request.user:
             AddNotificationTaskStatus(task.user_assigned, task, "created")
 
+        # add in ReJSON database
+        rj = Client(host='localhost', port=6379, )
+        rj.jsonset('task:' + str(task.id), Path.rootPath(), TaskSerializer(task).data)
+        rj.execute_command('JSON.NUMINCRBY acc .total 1')
+        rj.execute_command('JSON.SET acc .maxId ' + str(task.id))
+
         return Response(status=201)
 
 
-# Task 6: View Completed tasks
-class CompletedTaskListView(GenericAPIView):
-    serializer_class = TaskSerializer
+def getJSON(rj, name, path):
+    response_data = rj.execute_command('JSON.GET ' + name + ' ' + path)
+    if not response_data:
+        return None
+    else:
+        return json.loads(rj.execute_command('JSON.GET ' + name + ' ' + path).decode('utf-8'))
 
+
+def deleteRedisJSON(rj):
+    rj.execute_command('FLUSHDB')
+
+
+class RedisInitView(GenericAPIView):
     permission_classes = (AllowAny,)
-    authentication_classes = ()
 
     def get(self, request):
-        task = Task.objects.filter(status=Task.FINISHED)
-        return Response(TaskSerializer(task, many=True).data)
+        rj = Client(host='localhost', port=6379, )
+
+        deleteRedisJSON(rj)
+
+        tasks = Task.objects.all()
+        for task in tasks:
+            rj.jsonset('task:' + str(task.id), Path.rootPath(), TaskSerializer(task).data)
+
+        accountant = dict()
+        accountant.update({"total": tasks.count()})
+        accountant.update({"maxId": tasks.last().id})
+        rj.jsonset('acc', Path.rootPath(), accountant)
+
+        return Response(status=200)
 
 
 # Task 9:  Remove task
@@ -208,7 +276,7 @@ class UserTaskView(GenericAPIView):
                     valueEnd = int(valueStart) + 10
                     if key == 'page':
                         task = Task.objects.filter(user_assigned=request.user.id).order_by("-id")[
-                                        int(valueStart):int(valueEnd)]
+                               int(valueStart):int(valueEnd)]
 
                         # there are no task on this page
                         if not task:
@@ -241,7 +309,7 @@ class UserTaskCreatedView(GenericAPIView):
                     valueEnd = int(valueStart) + 10
                     if key == 'page':
                         task = Task.objects.filter(user_created=request.user.id).order_by("-id")[
-                                        int(valueStart):int(valueEnd)]
+                               int(valueStart):int(valueEnd)]
 
                         # there are no task on this page
                         if not task:
@@ -363,5 +431,3 @@ class TaskSearchViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('$title', '$description')
     http_method_names = ['get']
-
-
