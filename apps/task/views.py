@@ -35,15 +35,25 @@ class AllRedisTasksView(GenericAPIView):
     authentication_classes = ()
 
     def get(self, request):
+        for r in request.META:
+            print(str(r) + " <-> " + str(request.META[r]))
+
         rj = Client(host='localhost', port=6379, )
 
         url_parameters = str(request.META['QUERY_STRING'])
         params = url_parameters.split('&')
         task = list()
 
+        response = dict()
+        rj = Client(host='localhost', port=6379, )
+        response.update({"count": int(rj.execute_command('JSON.GET acc .total'))})
+
+        page = 0
+
         for param in params:
             if param:
                 if param and int(param.split('=')[1]) >= 0 and param.split('=')[0] == "page":
+                    page = int(param.split('=')[1])
                     valueStart = (int(param.split('=')[1])*10)
                     valueEnd = int(valueStart) + 10
                     tasksList = sorted(rj.execute_command('keys task:*'), reverse=True)
@@ -66,7 +76,22 @@ class AllRedisTasksView(GenericAPIView):
                 if current_task:
                     task.append(current_task)
 
-        return Response(task)
+        total_pages = int(int(rj.execute_command('JSON.GET acc .total'))/10)
+        if page < total_pages:
+            next_page = str(request.META['wsgi.url_scheme']) + "://" + str(request.META['HTTP_HOST']) + "/task/all/?page=" + str(page + 1)
+        else:
+            next_page = None
+
+        if page > 0:
+            prev_page = str(request.META['wsgi.url_scheme']) + "://" + str(request.META['HTTP_HOST'])  + "/task/all/?page=" + str(page - 1)
+        else:
+            prev_page = None
+
+        response.update({"next": next_page})
+        response.update({"previous": prev_page})
+        response.update({"results": task})
+
+        return Response(response)
 
 
 class TaskViewSet(viewsets.ModelViewSet):

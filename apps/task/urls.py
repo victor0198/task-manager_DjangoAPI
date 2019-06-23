@@ -1,12 +1,12 @@
 from django.urls import path
-from apps.task.views import CompletedTaskListView, DeleteView, AddTaskView, AddTaskSelfView, UpdateTaskState, \
-    TaskCommentsView, UserTaskView, UpdateTask, TaskViewSet, \
+from apps.task.views import  DeleteView, AddTaskView, AddTaskSelfView, UpdateTaskState, \
+    TaskCommentsView, UserTaskView, UpdateTask, \
     TaskFilterStatusCreatedViewSet, TaskFilterStatusInprocessViewSet, TaskFilterStatusFinishedViewSet, \
     TaskSearchViewSet, UserTaskCreatedView, AllRedisTasksView, RedisInitView
 from rest_framework.routers import DefaultRouter
-from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerStop, TimeTrackerLogsView, TopDurationTimeView
+from apps.time_tracker.views import TimeTrackerLogsView, TopDurationTimeView
 
-from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerAddLogView, TimeTrackerStop, LoggedTimeView, LogChartView
+from apps.time_tracker.views import TimeTrackerStartView, TimeTrackerAddLogView, TimeTrackerStop
 
 router = DefaultRouter()
 # router.register(r'', TaskViewSet.as_view(), base_name='al')
