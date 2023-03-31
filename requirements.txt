@@ -13,4 +13,4 @@ coverage
 django-nose
 django-extensions
 djangorestframework_simplejwt
-redis==3.2.1
+redis==4.4.4
